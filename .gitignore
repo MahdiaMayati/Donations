@@ -228,6 +228,4 @@ Desktop.ini
 .AppleDouble
 .LSOverride
 
-# User secrets / local overrides
-secrets.json
-appsettings.*.local.json
+
