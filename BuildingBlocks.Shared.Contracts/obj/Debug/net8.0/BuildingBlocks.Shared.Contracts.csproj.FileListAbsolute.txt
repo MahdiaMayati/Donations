@@ -1,0 +1,11 @@
+C:\Users\InformaTeam\source\repos\Donations\BuildingBlocks.Shared.Contracts\bin\Debug\net8.0\BuildingBlocks.Shared.Contracts.deps.json
+C:\Users\InformaTeam\source\repos\Donations\BuildingBlocks.Shared.Contracts\bin\Debug\net8.0\BuildingBlocks.Shared.Contracts.dll
+C:\Users\InformaTeam\source\repos\Donations\BuildingBlocks.Shared.Contracts\bin\Debug\net8.0\BuildingBlocks.Shared.Contracts.pdb
+C:\Users\InformaTeam\source\repos\Donations\BuildingBlocks.Shared.Contracts\obj\Debug\net8.0\BuildingBlocks.Shared.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\InformaTeam\source\repos\Donations\BuildingBlocks.Shared.Contracts\obj\Debug\net8.0\BuildingBlocks.Shared.Contracts.AssemblyInfoInputs.cache
+C:\Users\InformaTeam\source\repos\Donations\BuildingBlocks.Shared.Contracts\obj\Debug\net8.0\BuildingBlocks.Shared.Contracts.AssemblyInfo.cs
+C:\Users\InformaTeam\source\repos\Donations\BuildingBlocks.Shared.Contracts\obj\Debug\net8.0\BuildingBlocks.Shared.Contracts.csproj.CoreCompileInputs.cache
+C:\Users\InformaTeam\source\repos\Donations\BuildingBlocks.Shared.Contracts\obj\Debug\net8.0\BuildingBlocks.Shared.Contracts.dll
+C:\Users\InformaTeam\source\repos\Donations\BuildingBlocks.Shared.Contracts\obj\Debug\net8.0\refint\BuildingBlocks.Shared.Contracts.dll
+C:\Users\InformaTeam\source\repos\Donations\BuildingBlocks.Shared.Contracts\obj\Debug\net8.0\BuildingBlocks.Shared.Contracts.pdb
+C:\Users\InformaTeam\source\repos\Donations\BuildingBlocks.Shared.Contracts\obj\Debug\net8.0\ref\BuildingBlocks.Shared.Contracts.dll

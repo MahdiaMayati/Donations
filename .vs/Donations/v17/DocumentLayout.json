@@ -1,0 +1,393 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{01F84039-70BE-47A3-85F3-F69F10A30D4F}|Donation.Infrastructure\\Donation.Infrastructure.csproj|c:\\users\\informateam\\source\\repos\\donations\\donation.infrastructure\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{01F84039-70BE-47A3-85F3-F69F10A30D4F}|Donation.Infrastructure\\Donation.Infrastructure.csproj|solutionrelative:donation.infrastructure\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8256E3F6-ECB8-430E-9B6A-D56D088B9C44}|Donation.Applecation\\Donation.Application.csproj|c:\\users\\informateam\\source\\repos\\donations\\donation.applecation\\dtos\\auth\\response\\authresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8256E3F6-ECB8-430E-9B6A-D56D088B9C44}|Donation.Applecation\\Donation.Application.csproj|solutionrelative:donation.applecation\\dtos\\auth\\response\\authresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8256E3F6-ECB8-430E-9B6A-D56D088B9C44}|Donation.Applecation\\Donation.Application.csproj|c:\\users\\informateam\\source\\repos\\donations\\donation.applecation\\abstractions\\persistence\\iappdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8256E3F6-ECB8-430E-9B6A-D56D088B9C44}|Donation.Applecation\\Donation.Application.csproj|solutionrelative:donation.applecation\\abstractions\\persistence\\iappdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{075616C5-630C-4DA1-9BA0-00CACA72EBFB}|Donations\\Donations.csproj|c:\\users\\informateam\\source\\repos\\donations\\donations\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{075616C5-630C-4DA1-9BA0-00CACA72EBFB}|Donations\\Donations.csproj|solutionrelative:donations\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D46F8612-2AE6-40F9-B81D-8E77AB278A00}|Donation.Domain\\Donation.Domain.csproj|c:\\users\\informateam\\source\\repos\\donations\\donation.domain\\entities\\refreshtoken.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D46F8612-2AE6-40F9-B81D-8E77AB278A00}|Donation.Domain\\Donation.Domain.csproj|solutionrelative:donation.domain\\entities\\refreshtoken.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D46F8612-2AE6-40F9-B81D-8E77AB278A00}|Donation.Domain\\Donation.Domain.csproj|c:\\users\\informateam\\source\\repos\\donations\\donation.domain\\entities\\permission.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D46F8612-2AE6-40F9-B81D-8E77AB278A00}|Donation.Domain\\Donation.Domain.csproj|solutionrelative:donation.domain\\entities\\permission.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8256E3F6-ECB8-430E-9B6A-D56D088B9C44}|Donation.Applecation\\Donation.Application.csproj|c:\\users\\informateam\\source\\repos\\donations\\donation.applecation\\abstractions\\authentication\\ijwttokenprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8256E3F6-ECB8-430E-9B6A-D56D088B9C44}|Donation.Applecation\\Donation.Application.csproj|solutionrelative:donation.applecation\\abstractions\\authentication\\ijwttokenprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8256E3F6-ECB8-430E-9B6A-D56D088B9C44}|Donation.Applecation\\Donation.Application.csproj|c:\\users\\informateam\\source\\repos\\donations\\donation.applecation\\abstractions\\services\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8256E3F6-ECB8-430E-9B6A-D56D088B9C44}|Donation.Applecation\\Donation.Application.csproj|solutionrelative:donation.applecation\\abstractions\\services\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{01F84039-70BE-47A3-85F3-F69F10A30D4F}|Donation.Infrastructure\\Donation.Infrastructure.csproj|c:\\users\\informateam\\source\\repos\\donations\\donation.infrastructure\\persistence\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{01F84039-70BE-47A3-85F3-F69F10A30D4F}|Donation.Infrastructure\\Donation.Infrastructure.csproj|solutionrelative:donation.infrastructure\\persistence\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D46F8612-2AE6-40F9-B81D-8E77AB278A00}|Donation.Domain\\Donation.Domain.csproj|c:\\users\\informateam\\source\\repos\\donations\\donation.domain\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D46F8612-2AE6-40F9-B81D-8E77AB278A00}|Donation.Domain\\Donation.Domain.csproj|solutionrelative:donation.domain\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{01F84039-70BE-47A3-85F3-F69F10A30D4F}|Donation.Infrastructure\\Donation.Infrastructure.csproj|c:\\users\\informateam\\source\\repos\\donations\\donation.infrastructure\\persistence\\configurations\\rolepermissionconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{01F84039-70BE-47A3-85F3-F69F10A30D4F}|Donation.Infrastructure\\Donation.Infrastructure.csproj|solutionrelative:donation.infrastructure\\persistence\\configurations\\rolepermissionconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{075616C5-630C-4DA1-9BA0-00CACA72EBFB}|Donations\\Donations.csproj|c:\\users\\informateam\\source\\repos\\donations\\donations\\donations.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{075616C5-630C-4DA1-9BA0-00CACA72EBFB}|Donations\\Donations.csproj|solutionrelative:donations\\donations.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{075616C5-630C-4DA1-9BA0-00CACA72EBFB}|Donations\\Donations.csproj|c:\\users\\informateam\\source\\repos\\donations\\donations\\controllers\\basecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{075616C5-630C-4DA1-9BA0-00CACA72EBFB}|Donations\\Donations.csproj|solutionrelative:donations\\controllers\\basecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Infrastructure\\Migrations\\20260917150627_UpdateUserIdentitySchema.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Donation.Infrastructure\\Migrations\\20260917150627_UpdateUserIdentitySchema.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{01F84039-70BE-47A3-85F3-F69F10A30D4F}|Donation.Infrastructure\\Donation.Infrastructure.csproj|c:\\users\\informateam\\source\\repos\\donations\\donation.infrastructure\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{01F84039-70BE-47A3-85F3-F69F10A30D4F}|Donation.Infrastructure\\Donation.Infrastructure.csproj|solutionrelative:donation.infrastructure\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{01F84039-70BE-47A3-85F3-F69F10A30D4F}|Donation.Infrastructure\\Donation.Infrastructure.csproj|c:\\users\\informateam\\source\\repos\\donations\\donation.infrastructure\\authentication\\passwordhasher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{01F84039-70BE-47A3-85F3-F69F10A30D4F}|Donation.Infrastructure\\Donation.Infrastructure.csproj|solutionrelative:donation.infrastructure\\authentication\\passwordhasher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D46F8612-2AE6-40F9-B81D-8E77AB278A00}|Donation.Domain\\Donation.Domain.csproj|c:\\users\\informateam\\source\\repos\\donations\\donation.domain\\donation.domain.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{D46F8612-2AE6-40F9-B81D-8E77AB278A00}|Donation.Domain\\Donation.Domain.csproj|solutionrelative:donation.domain\\donation.domain.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{075616C5-630C-4DA1-9BA0-00CACA72EBFB}|Donations\\Donations.csproj|c:\\users\\informateam\\source\\repos\\donations\\donations\\extensions\\swaggerextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{075616C5-630C-4DA1-9BA0-00CACA72EBFB}|Donations\\Donations.csproj|solutionrelative:donations\\extensions\\swaggerextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{075616C5-630C-4DA1-9BA0-00CACA72EBFB}|Donations\\Donations.csproj|c:\\users\\informateam\\source\\repos\\donations\\donations\\extensions\\authenticationextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{075616C5-630C-4DA1-9BA0-00CACA72EBFB}|Donations\\Donations.csproj|solutionrelative:donations\\extensions\\authenticationextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{075616C5-630C-4DA1-9BA0-00CACA72EBFB}|Donations\\Donations.csproj|c:\\users\\informateam\\source\\repos\\donations\\donations\\extensions\\serviceextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{075616C5-630C-4DA1-9BA0-00CACA72EBFB}|Donations\\Donations.csproj|solutionrelative:donations\\extensions\\serviceextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D46F8612-2AE6-40F9-B81D-8E77AB278A00}|Donation.Domain\\Donation.Domain.csproj|c:\\users\\informateam\\source\\repos\\donations\\donation.domain\\common\\baseentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D46F8612-2AE6-40F9-B81D-8E77AB278A00}|Donation.Domain\\Donation.Domain.csproj|solutionrelative:donation.domain\\common\\baseentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 308,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{0ad07096-bba9-4900-a651-0598d26f6d24}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "IAppDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Applecation\\Abstractions\\Persistence\\IAppDbContext.cs",
+              "RelativeDocumentMoniker": "Donation.Applecation\\Abstractions\\Persistence\\IAppDbContext.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Applecation\\Abstractions\\Persistence\\IAppDbContext.cs",
+              "RelativeToolTip": "Donation.Applecation\\Abstractions\\Persistence\\IAppDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T11:05:10.405Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "RefreshToken.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Domain\\Entities\\RefreshToken.cs",
+              "RelativeDocumentMoniker": "Donation.Domain\\Entities\\RefreshToken.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Domain\\Entities\\RefreshToken.cs",
+              "RelativeToolTip": "Donation.Domain\\Entities\\RefreshToken.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-20T10:28:54.456Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donations\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "Donations\\Controllers\\AuthController.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donations\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "Donations\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAowC0AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-20T10:16:01.533Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AuthService.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Infrastructure\\Services\\AuthService.cs",
+              "RelativeDocumentMoniker": "Donation.Infrastructure\\Services\\AuthService.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Infrastructure\\Services\\AuthService.cs",
+              "RelativeToolTip": "Donation.Infrastructure\\Services\\AuthService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAI4AAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-20T10:34:04.793Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AuthResponse.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Applecation\\DTOs\\Auth\\Response\\AuthResponse.cs",
+              "RelativeDocumentMoniker": "Donation.Applecation\\DTOs\\Auth\\Response\\AuthResponse.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Applecation\\DTOs\\Auth\\Response\\AuthResponse.cs",
+              "RelativeToolTip": "Donation.Applecation\\DTOs\\Auth\\Response\\AuthResponse.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAABTAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-20T11:45:35.596Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "IAuthService.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Applecation\\Abstractions\\Services\\IAuthService.cs",
+              "RelativeDocumentMoniker": "Donation.Applecation\\Abstractions\\Services\\IAuthService.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Applecation\\Abstractions\\Services\\IAuthService.cs",
+              "RelativeToolTip": "Donation.Applecation\\Abstractions\\Services\\IAuthService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAABdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-20T10:33:58.834Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Permission.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Domain\\Entities\\Permission.cs",
+              "RelativeDocumentMoniker": "Donation.Domain\\Entities\\Permission.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Domain\\Entities\\Permission.cs",
+              "RelativeToolTip": "Donation.Domain\\Entities\\Permission.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-20T10:49:24.373Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "IJwtTokenProvider.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Applecation\\Abstractions\\Authentication\\IJwtTokenProvider.cs",
+              "RelativeDocumentMoniker": "Donation.Applecation\\Abstractions\\Authentication\\IJwtTokenProvider.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Applecation\\Abstractions\\Authentication\\IJwtTokenProvider.cs",
+              "RelativeToolTip": "Donation.Applecation\\Abstractions\\Authentication\\IJwtTokenProvider.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAABUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-20T10:44:00.315Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Infrastructure\\Persistence\\AppDbContext.cs",
+              "RelativeDocumentMoniker": "Donation.Infrastructure\\Persistence\\AppDbContext.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Infrastructure\\Persistence\\AppDbContext.cs",
+              "RelativeToolTip": "Donation.Infrastructure\\Persistence\\AppDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAABJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T11:06:21.598Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Domain\\Entities\\User.cs",
+              "RelativeDocumentMoniker": "Donation.Domain\\Entities\\User.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Domain\\Entities\\User.cs",
+              "RelativeToolTip": "Donation.Domain\\Entities\\User.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-20T10:37:02.403Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Donations.csproj",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donations\\Donations.csproj",
+              "RelativeDocumentMoniker": "Donations\\Donations.csproj",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donations\\Donations.csproj",
+              "RelativeToolTip": "Donations\\Donations.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-09-17T17:24:25.445Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "RolePermissionConfiguration.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Infrastructure\\Persistence\\Configurations\\RolePermissionConfiguration.cs",
+              "RelativeDocumentMoniker": "Donation.Infrastructure\\Persistence\\Configurations\\RolePermissionConfiguration.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Infrastructure\\Persistence\\Configurations\\RolePermissionConfiguration.cs",
+              "RelativeToolTip": "Donation.Infrastructure\\Persistence\\Configurations\\RolePermissionConfiguration.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAowBMAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T14:03:30.79Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "BaseController.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donations\\Controllers\\BaseController.cs",
+              "RelativeDocumentMoniker": "Donations\\Controllers\\BaseController.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donations\\Controllers\\BaseController.cs",
+              "RelativeToolTip": "Donations\\Controllers\\BaseController.cs",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAiwB0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T15:18:22.329Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "20260917150627_UpdateUserIdentitySchema.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Infrastructure\\Migrations\\20260917150627_UpdateUserIdentitySchema.cs",
+              "RelativeDocumentMoniker": "Donation.Infrastructure\\Migrations\\20260917150627_UpdateUserIdentitySchema.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Infrastructure\\Migrations\\20260917150627_UpdateUserIdentitySchema.cs",
+              "RelativeToolTip": "Donation.Infrastructure\\Migrations\\20260917150627_UpdateUserIdentitySchema.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T15:06:28.313Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "DependencyInjection.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Infrastructure\\DependencyInjection.cs",
+              "RelativeDocumentMoniker": "Donation.Infrastructure\\DependencyInjection.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Infrastructure\\DependencyInjection.cs",
+              "RelativeToolTip": "Donation.Infrastructure\\DependencyInjection.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAiwB8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T12:21:32.118Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "PasswordHasher.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Infrastructure\\Authentication\\PasswordHasher.cs",
+              "RelativeDocumentMoniker": "Donation.Infrastructure\\Authentication\\PasswordHasher.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Infrastructure\\Authentication\\PasswordHasher.cs",
+              "RelativeToolTip": "Donation.Infrastructure\\Authentication\\PasswordHasher.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T11:35:41.557Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "SwaggerExtensions.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donations\\Extensions\\SwaggerExtensions.cs",
+              "RelativeDocumentMoniker": "Donations\\Extensions\\SwaggerExtensions.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donations\\Extensions\\SwaggerExtensions.cs",
+              "RelativeToolTip": "Donations\\Extensions\\SwaggerExtensions.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T13:04:24.786Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Donation.Domain.csproj",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Domain\\Donation.Domain.csproj",
+              "RelativeDocumentMoniker": "Donation.Domain\\Donation.Domain.csproj",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Domain\\Donation.Domain.csproj",
+              "RelativeToolTip": "Donation.Domain\\Donation.Domain.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-09-17T13:25:37.671Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "ServiceExtensions.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donations\\Extensions\\ServiceExtensions.cs",
+              "RelativeDocumentMoniker": "Donations\\Extensions\\ServiceExtensions.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donations\\Extensions\\ServiceExtensions.cs",
+              "RelativeToolTip": "Donations\\Extensions\\ServiceExtensions.cs",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAgwEYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T13:02:04.004Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "AuthenticationExtensions.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donations\\Extensions\\AuthenticationExtensions.cs",
+              "RelativeDocumentMoniker": "Donations\\Extensions\\AuthenticationExtensions.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donations\\Extensions\\AuthenticationExtensions.cs",
+              "RelativeToolTip": "Donations\\Extensions\\AuthenticationExtensions.cs",
+              "ViewState": "AgIAAAcAAAAAAAAAAAAUwCIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T13:04:53.414Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "BaseEntity.cs",
+              "DocumentMoniker": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Domain\\Common\\BaseEntity.cs",
+              "RelativeDocumentMoniker": "Donation.Domain\\Common\\BaseEntity.cs",
+              "ToolTip": "C:\\Users\\InformaTeam\\source\\repos\\Donations\\Donation.Domain\\Common\\BaseEntity.cs",
+              "RelativeToolTip": "Donation.Domain\\Common\\BaseEntity.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T10:37:58.423Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 92,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
