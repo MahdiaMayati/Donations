@@ -1,0 +1,86 @@
+# Project Rules & Architecture - Donation System (.NET 8 Clean Architecture)
+
+## 1. Project Overview & Architecture
+- Backend API built with ASP.NET Core and Entity Framework Core following **Clean Architecture** principles.
+- Divided into clear modular layers: Domain, Application, Infrastructure, and Presentation.
+- Database: Microsoft SQL Server utilizing a custom `Users` table alongside ASP.NET Core Identity tables (`AspNetRoles`, `RolePermissions`, etc.).
+
+## 2. Core Operational Rules & Strict Boundaries
+- **No Assumptions / Zero Invention:** Never make independent assumptions or guess functional requirements. If anything is ambiguous, missing, or requires a decision, **always ask the user first** before proceeding.
+- **Performance & Database Integrity:** Strictly avoid catastrophic performance pitfalls, inefficient algorithms, and database anti-patterns such as **N+1 queries** (always use proper eager loading `.Include()`, projection, or explicit loading where necessary).
+- **Pure CQRS Pattern:** Implement the **CQRS pattern in its raw/pure form** without being bound to or reliant on external heavy libraries for CQRS structure, ensuring clean separation between Commands and Queries.
+
+## 3. Core Programming Principles (SOLID & DRY)
+- **SOLID Principles:** 
+  - **S (Single Responsibility):** Every class, handler, or service must have a single responsibility.
+  - **O (Open/Closed):** Classes open for extension, closed for modification, relying on Interfaces.
+  - **L (Liskov Substitution):** Implementations must substitute base interfaces seamlessly.
+  - **I (Interface Segregation):** Keep interfaces small and specific.
+  - **D (Dependency Inversion):** Use abstractions (`Interfaces`) and Dependency Injection.
+- **DRY (Don't Repeat Yourself):** Avoid code duplication using shared logic and extension methods.
+
+## 4. Naming Conventions (Folders & Files)
+- **C# Files & Classes:** PascalCase (e.g., `CreateDonationCommandHandler.cs`, `DonationService.cs`).
+- **Interfaces:** PascalCase prefixed with 'I' (e.g., `IAppDbContext.cs`, `IJwtTokenProvider.cs`).
+- **Variables & Parameters:** camelCase (e.g., `userId`, `donationRequest`).
+- **Folders:** PascalCase reflecting architectural layers or feature domains (e.g., `Commands`, `Queries`, `Validators`, `DTOs`).
+- **Endpoints / URLs:** kebab-case or lowercase RESTful plural nouns (e.g., `/api/donations`, `/api/auth/refresh-token`).
+
+## 5. Donation Process Core Logic & Flow (Based on UI/UX Workflows)
+- **Step-by-Step Donor Journey:**
+  1. **Browsing & Auth:** Browse website $\rightarrow$ Register/Login $\rightarrow$ Review Terms & Policies (Must agree to proceed, otherwise access is blocked).
+  2. **Donation Request & Details:** Initiate donation $\rightarrow$ Specify item details (Quantity, Weight, Image) $\rightarrow$ Choose delivery method (Home Address or Center Drop-off). If delivering to a center and multiple centers exist, select the preferred center; otherwise, direct to the single center.
+  3. **Communication Preferences:** Select preferred communication channel (WhatsApp, Call, SMS) $\rightarrow$ Submit Request.
+  4. **Post-Submission Options:** Ability to edit the donation request, view the donation log/history, and track status.
+- **Donation Status Lifecycle:**
+  - `Submitted` $\rightarrow$ `Reviewed` $\rightarrow$ `Accepted` $\rightarrow$ `Scheduled` $\rightarrow$ `Received` $\rightarrow$ `Completed`.
+
+## 6. Request State Management
+- States across the system must be explicitly managed using enums reflecting the exact lifecycle stages.
+- State transitions must be validated in the business logic layer before saving to the database.
+
+## 7. Payment Handling Specification
+- **No Payment Gateway / Financial Transactions:** The system does not handle monetary payments or financial gateways. It strictly manages physical/material item donations and logistics.
+
+## 8. Performance & Code Execution Standards
+- **Async/Await:** Strict enforcement of asynchronous programming (`async`/`await`) across all Database, Handler, and Controller operations.
+- **CancellationToken:** Every Handler, EF Core query, and Controller method must accept and pass `CancellationToken`.
+- **Pagination:** Any API endpoint returning a collection or list of data must implement pagination (`PageNumber`, `PageSize`) to ensure optimal performance.
+- **Rate Limiting:** Built-in ASP.NET Core Rate Limiting middleware configured to protect sensitive endpoints (e.g., Login/Register: 5 requests/min, Donation submission: 10 requests/min, General reads: 60 requests/min).
+
+## 9. API Design, Response Standardization & Error Handling (RFC 7807 Problem Details)
+- **Unified Response Format:** All API endpoints must return a standardized JSON structure combined with standard **Problem Details** for errors:
+  - `status`: string (`success` or `faild`)
+  - `message`: string (descriptive message)
+  - `errors`: array/object (detailed error messages or standard Problem Details fields: `type`, `title`, `status`, `detail`, `instance`)
+  - `data`: payload object (null on failure)
+- **HTTP Status Codes & Error Mapping:**
+  - `200 OK`: Successful requests.
+  - `201 Created`: Successful resource creation.
+  - `400 Bad Request`: Validation errors or invalid business logic.
+  - `401 Unauthorized`: Missing or invalid authentication.
+  - `403 Forbidden`: Insufficient permissions or roles.
+  - `404 Not Found`: Resource does not exist.
+  - `500 Internal Server Error`: Unhandled exceptions caught globally.
+
+## 10. Security & Sensitive Data Handling
+- **Sensitive Data Protection:** Avoid implementing full/over-exposed system logic where sensitive data is mishandled. Strictly secure sensitive flows (such as Authentication, Login, Register, Tokens) by masking logs, avoiding plain-text credentials, securing JWT secrets, and ensuring proper authorization checks.
+
+## 11. Continuous Agent Documentation & Handover Protocol
+- **Agent Documentation Requirements:** In every step, task execution, or phase completed by the AI Agent, it must generate and maintain updated documentation files (e.g., inside a `docs/` folder or root markdown files).
+- **Documentation Scope:**
+  - Architecture overview and design decisions.
+  - Current project state, active phase, and planned roadmap.
+  - Module/feature-specific documentation so that any incoming AI model or human developer can seamlessly pick up right where the previous agent stopped without losing context.
+
+## 12. Error Handling, Validation & Logging
+- **Global Exception Handling Middleware:** Intercept all system exceptions centrally to return clean, standardized JSON + Problem Details responses.
+- **FluentValidation:** Keep validation logic strictly separate from controllers and DTOs using dedicated independent validators.
+- **Logging System:** Utilize built-in `ILogger<T>` across all Handlers and Middlewares to trace execution flows safely without exposing sensitive data.
+
+## 13. Testing Strategy
+- **Unit Tests:** Implement xUnit with Moq/NSubstitute for testing Domain logic, Validators, and Handlers independently.
+- **Integration Tests:** Test full API endpoints and database interactions using `WebApplicationFactory`.
+
+## 14. Git & Development Best Practices
+- **Ignore Rules & Migrations:** The `.gitignore` file must ignore temporary local files and Visual Studio directories (`.vs/`, `.suo`, etc.), but **Entity Framework Core migration files (`Migrations/`) must NOT be ignored** and should be fully tracked and committed to version control.
