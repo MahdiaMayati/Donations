@@ -1,0 +1,62 @@
+services:
+
+  # ─── قاعدة البيانات ───────────────────────────────────────────
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: donations-sqlserver
+    restart: unless-stopped
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD}
+      - MSSQL_PID=Express
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - donations-network
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P '${SA_PASSWORD}' -Q 'SELECT 1' -No || exit 1"]
+      interval: 15s
+      retries: 10
+      start_period: 45s
+      timeout: 5s
+
+  # ─── الـ API ──────────────────────────────────────────────────
+  api:
+    image: ghcr.io/${GITHUB_REPOSITORY_LC}:latest
+    container_name: donations-api
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=DonationDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=true;Connect Timeout=60;
+      - JwtSettings__Secret=${JWT_SECRET}
+      - JwtSettings__Issuer=DonationApi
+      - JwtSettings__Audience=DonationUsers
+      - JwtSettings__ExpiryMinutes=60
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    networks:
+      - donations-network
+
+  # ─── الـ Nginx (Reverse Proxy) ────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: donations-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - api
+    networks:
+      - donations-network
+
+# ─── Volumes & Networks ───────────────────────────────────────
+volumes:
+  sqlserver-data:
+
+networks:
+  donations-network:
+    driver: bridge
