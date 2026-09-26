@@ -69,10 +69,7 @@ using (var scope = app.Services.CreateScope())
 // ==========================================
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwaggerDocumentation();
-}
+app.UseSwaggerDocumentation();
 
 if (app.Environment.IsDevelopment())
 {
