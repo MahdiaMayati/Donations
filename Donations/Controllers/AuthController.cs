@@ -1,10 +1,12 @@
 ﻿using Donation.Application.Abstractions.Services;
 using Donation.Application.DTOs.Auth.Request;
 using Donation.Application.DTOs.Auth.Response;
+using Microsoft.AspNetCore.Authorization; // 1. أضيفي هذه المكتبة
 using Microsoft.AspNetCore.Mvc;
 
 namespace Donation.Api.Controllers;
 
+[AllowAnonymous] // 2. أضيفي هذا الوسم هنا لفتح مسارات الـ Auth بالكامل
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
@@ -29,7 +31,6 @@ public class AuthController : ControllerBase
         var result = await _authService.LoginAsync(request, cancellationToken);
         return Ok(result);
     }
-
 
     [HttpPost("refresh-token")]
     public async Task<ActionResult<AuthResponse>> RefreshToken([FromBody] string token)

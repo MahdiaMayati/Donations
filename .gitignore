@@ -228,4 +228,8 @@ Desktop.ini
 .AppleDouble
 .LSOverride
 
+# Ignore development appsettings
+appsettings.Development.json
+**/appsettings.Development.json
+
 

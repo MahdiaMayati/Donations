@@ -6,24 +6,22 @@ using Donation.Infrastructure.Persistence.Seeders;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-
-// Authentication & Swagger Extensions
-builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddSwaggerDocumentation();
 
 // ==========================================
-// 1. أولاً: تسجيل طبقة الـ Infrastructure (لتسجيل AppDbContext وقاعدة البيانات أولاً)
+// 1. تسجيل طبقة الـ Infrastructure
 // ==========================================
 builder.Services.AddInfrastructure(builder.Configuration);
 
 // ==========================================
-// 2. ثانياً: تسجيل الـ Identity وربطه بالـ AppDbContext (بعد أن أصبح مسجلاً في الـ DI)
+// 2. تسجيل الـ Identity أولاً
 // ==========================================
 builder.Services.AddIdentity<User, Role>(options =>
 {
@@ -33,9 +31,40 @@ builder.Services.AddIdentity<User, Role>(options =>
 .AddDefaultTokenProviders()
 .AddRoles<Role>();
 
-// 3. سياسات الصلاحيات (Authorization Policies)
+// ==========================================
+// 3. ضبط الـ Cookies لمنع التحويل وإرجاع 401 مباشرة للـ API
+// ==========================================
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return Task.CompletedTask;
+    };
+
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return Task.CompletedTask;
+    };
+});
+
+// ==========================================
+// 4. تسجيل الـ JWT ثانياً ليكون هو الأساس والمعتمد للـ API
+// ==========================================
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
+// ==========================================
+// 5. سياسات الصلاحيات + فرض الحماية العامة (FallbackPolicy)
+// ==========================================
 builder.Services.AddAuthorization(options =>
 {
+    // فرض الحماية على كل الـ Endpoints تلقائياً (تتطلب تسجيل دخول حصراً)
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+
+    // السياسات الخاصة بالصلاحيات (Permissions)
     foreach (var permission in Donation.Application.Constants.Permissions.AllPermissionsList)
     {
         options.AddPolicy(permission, policy =>
@@ -46,7 +75,7 @@ builder.Services.AddAuthorization(options =>
 var app = builder.Build();
 
 // ==========================================
-// تشغيل الـ Seeder هنا لإدخال الأدوار والآدمن تلقائياً
+// تشغيل الـ Seeder لإدخال الأدوار والآدمن تلقائياً
 // ==========================================
 using (var scope = app.Services.CreateScope())
 {
@@ -66,8 +95,8 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "An error occurred during database migration/seeding.");
     }
 }
-// ==========================================
 
+// ==========================================
 // Configure the HTTP request pipeline.
 app.UseSwaggerDocumentation();
 
