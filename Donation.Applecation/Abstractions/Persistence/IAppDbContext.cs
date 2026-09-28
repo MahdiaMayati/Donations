@@ -1,6 +1,5 @@
 ﻿using Donation.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace Donation.Application.Abstractions.Persistence;
 
@@ -10,6 +9,8 @@ public interface IAppDbContext
     DbSet<Role> Roles { get; }
     DbSet<UserRole> UserRoles { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
+    DbSet<City> Cities { get; }
+    DbSet<Area> Areas { get; }
+    DbSet<Address> Addresses { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
-
 }

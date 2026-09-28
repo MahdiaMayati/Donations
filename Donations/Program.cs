@@ -1,4 +1,5 @@
 ﻿using Donations.Extensions;
+using Donation.Application;
 using Donation.Infrastructure;
 using Donation.Domain.Entities;
 using Donation.Infrastructure.Persistence;
@@ -16,12 +17,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerDocumentation();
 
 // ==========================================
-// 1. تسجيل طبقة الـ Infrastructure
+// 1. تسجيل طبقة الـ Application (CQRS / MediatR)
+// ==========================================
+builder.Services.AddApplication();
+
+// ==========================================
+// 2. تسجيل طبقة الـ Infrastructure (AppDbContext وقاعدة البيانات)
 // ==========================================
 builder.Services.AddInfrastructure(builder.Configuration);
 
 // ==========================================
-// 2. تسجيل الـ Identity أولاً
+// 3. تسجيل الـ Identity وربطه بالـ AppDbContext
 // ==========================================
 builder.Services.AddIdentity<User, Role>(options =>
 {
@@ -32,27 +38,18 @@ builder.Services.AddIdentity<User, Role>(options =>
 .AddRoles<Role>();
 
 // ==========================================
-// 3. ضبط الـ Cookies لمنع التحويل وإرجاع 401 مباشرة للـ API
-// ==========================================
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Events.OnRedirectToLogin = context =>
-    {
-        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-        return Task.CompletedTask;
-    };
-
-    options.Events.OnRedirectToAccessDenied = context =>
-    {
-        context.Response.StatusCode = StatusCodes.Status403Forbidden;
-        return Task.CompletedTask;
-    };
-});
-
-// ==========================================
-// 4. تسجيل الـ JWT ثانياً ليكون هو الأساس والمعتمد للـ API
+// 4. JWT AFTER Identity + cookie redirect disabled (see AuthenticationExtensions).
+//    Without this, unauthorized/forbidden API calls redirect to /Account/Login → fake 404.
 // ==========================================
 builder.Services.AddJwtAuthentication(builder.Configuration);
+
+// Ensure JWT remains the default schemes after Identity cookie registration.
+builder.Services.PostConfigure<Microsoft.AspNetCore.Authentication.AuthenticationOptions>(options =>
+{
+    options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultForbidScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+});
 
 // ==========================================
 // 5. سياسات الصلاحيات + فرض الحماية العامة (FallbackPolicy)

@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Donation.Applecation\Donation.Application.csproj" />
   </ItemGroup>
 
