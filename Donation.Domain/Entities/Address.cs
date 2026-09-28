@@ -9,6 +9,7 @@ public class Address
     public string Details { get; set; } = string.Empty;
     public double Latitude { get; set; }
     public double Longitude { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public Area Area { get; set; } = null!;
     public User User { get; set; } = null!;

@@ -19,6 +19,10 @@ public class AddressConfiguration : IEntityTypeConfiguration<Address>
             .IsRequired()
             .HasMaxLength(500);
 
+        builder.Property(a => a.CreatedAt)
+            .IsRequired()
+            .HasDefaultValueSql("GETUTCDATE()");
+
         builder.HasOne(a => a.Area)
             .WithMany(area => area.Addresses)
             .HasForeignKey(a => a.AreaId)

@@ -68,7 +68,8 @@ public sealed class UpdateAddressCommandHandler : IRequestHandler<UpdateAddressC
             Street = address.Street,
             Details = address.Details,
             Latitude = address.Latitude,
-            Longitude = address.Longitude
+            Longitude = address.Longitude,
+            CreatedAt = address.CreatedAt
         };
     }
 

@@ -47,7 +47,8 @@ public sealed class GetAllAddressesQueryHandler : IRequestHandler<GetAllAddresse
                 Street = a.Street,
                 Details = a.Details,
                 Latitude = a.Latitude,
-                Longitude = a.Longitude
+                Longitude = a.Longitude,
+                CreatedAt = a.CreatedAt
             })
             .ToListAsync(cancellationToken);
     }

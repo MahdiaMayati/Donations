@@ -47,7 +47,8 @@ public sealed class CreateAddressCommandHandler : IRequestHandler<CreateAddressC
             Street = request.Street.Trim(),
             Details = request.Details.Trim(),
             Latitude = request.Latitude,
-            Longitude = request.Longitude
+            Longitude = request.Longitude,
+            CreatedAt = DateTime.UtcNow
         };
 
         _context.Addresses.Add(address);
@@ -66,6 +67,7 @@ public sealed class CreateAddressCommandHandler : IRequestHandler<CreateAddressC
         Street = address.Street,
         Details = address.Details,
         Latitude = address.Latitude,
-        Longitude = address.Longitude
+        Longitude = address.Longitude,
+        CreatedAt = address.CreatedAt
     };
 }

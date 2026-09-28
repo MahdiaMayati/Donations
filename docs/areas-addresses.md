@@ -32,6 +32,7 @@ Area and Address follow the same CQRS pattern as City (MediatR commands/queries,
 | `UserId` | owner (from JWT; required for ownership rules) |
 | `Street` / `Details` | required |
 | `Latitude` / `Longitude` | -90..90 / -180..180 |
+| `CreatedAt` | UTC timestamp set on create |
 
 | Method | Route | Auth |
 |--------|-------|------|
