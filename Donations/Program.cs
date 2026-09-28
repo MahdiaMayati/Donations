@@ -1,4 +1,5 @@
 ﻿using Donations.Extensions;
+using Donation.Application;
 using Donation.Infrastructure;
 using Donation.Domain.Entities;
 using Donation.Infrastructure.Persistence;
@@ -12,18 +13,20 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-
-// Authentication & Swagger Extensions
-builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddSwaggerDocumentation();
 
 // ==========================================
-// 1. أولاً: تسجيل طبقة الـ Infrastructure (لتسجيل AppDbContext وقاعدة البيانات أولاً)
+// 1. تسجيل طبقة الـ Application (CQRS / MediatR)
+// ==========================================
+builder.Services.AddApplication();
+
+// ==========================================
+// 2. تسجيل طبقة الـ Infrastructure (AppDbContext وقاعدة البيانات)
 // ==========================================
 builder.Services.AddInfrastructure(builder.Configuration);
 
 // ==========================================
-// 2. ثانياً: تسجيل الـ Identity وربطه بالـ AppDbContext (بعد أن أصبح مسجلاً في الـ DI)
+// 3. تسجيل الـ Identity وربطه بالـ AppDbContext
 // ==========================================
 builder.Services.AddIdentity<User, Role>(options =>
 {
@@ -33,7 +36,21 @@ builder.Services.AddIdentity<User, Role>(options =>
 .AddDefaultTokenProviders()
 .AddRoles<Role>();
 
-// 3. سياسات الصلاحيات (Authorization Policies)
+// ==========================================
+// 4. JWT AFTER Identity + cookie redirect disabled (see AuthenticationExtensions).
+//    Without this, unauthorized/forbidden API calls redirect to /Account/Login → fake 404.
+// ==========================================
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
+// Ensure JWT remains the default schemes after Identity cookie registration.
+builder.Services.PostConfigure<Microsoft.AspNetCore.Authentication.AuthenticationOptions>(options =>
+{
+    options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultForbidScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+});
+
+// 5. سياسات الصلاحيات (Authorization Policies)
 builder.Services.AddAuthorization(options =>
 {
     foreach (var permission in Donation.Application.Constants.Permissions.AllPermissionsList)

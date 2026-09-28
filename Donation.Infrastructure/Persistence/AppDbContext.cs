@@ -15,7 +15,9 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public new DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
-
+    public DbSet<City> Cities => Set<City>();
+    public DbSet<Area> Areas => Set<Area>();
+    public DbSet<Address> Addresses => Set<Address>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

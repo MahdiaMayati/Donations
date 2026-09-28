@@ -227,5 +227,9 @@ Desktop.ini
 .DS_Store
 .AppleDouble
 .LSOverride
+.vs/
 
+# Ignore development appsettings
+appsettings.Development.json
+**/appsettings.Development.json
 
