@@ -11,6 +11,13 @@ using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Prefer ASPNETCORE_URLS / launchSettings. If neither is set (e.g. bare `dotnet run`),
+// bind to the standard local HTTPS + HTTP development ports.
+if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ASPNETCORE_URLS")))
+{
+    builder.WebHost.UseUrls("https://localhost:7213", "http://localhost:5059");
+}
+
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -97,7 +104,9 @@ using (var scope = app.Services.CreateScope())
 // Configure the HTTP request pipeline.
 app.UseSwaggerDocumentation();
 
-if (app.Environment.IsDevelopment())
+// Only enable HTTPS redirection when an HTTPS URL is actually configured
+// (avoids broken redirects on the "http" profile).
+if (app.Environment.IsDevelopment() && IsHttpsConfigured(app))
 {
     app.UseHttpsRedirection();
 }
@@ -108,3 +117,22 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+static bool IsHttpsConfigured(WebApplication app)
+{
+    static bool HasHttps(string? value) =>
+        !string.IsNullOrWhiteSpace(value)
+        && value.Contains("https://", StringComparison.OrdinalIgnoreCase);
+
+    if (HasHttps(Environment.GetEnvironmentVariable("ASPNETCORE_URLS")))
+    {
+        return true;
+    }
+
+    if (HasHttps(app.Configuration["urls"]) || HasHttps(app.Configuration["ASPNETCORE_URLS"]))
+    {
+        return true;
+    }
+
+    return app.Urls.Any(u => u.StartsWith("https://", StringComparison.OrdinalIgnoreCase));
+}
