@@ -8,7 +8,7 @@ namespace Donation.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-// [Authorize(Roles = "Admin")] // يفضل تفعيلها لاحقاً لحماية الـ Endpoints
+[Authorize(Roles = "Admin")] // يفضل تفعيلها لاحقاً لحماية الـ Endpoints
 public class RolesAndPermissionsController : ControllerBase
 {
     private readonly RoleManager<Role> _roleManager; // استخدام كلاس Role الخاص بكِ

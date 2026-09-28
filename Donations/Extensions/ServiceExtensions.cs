@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Http; // تأكدي من إضافة هذه المكتبة لكي يتعرف النظام على StatusCodes
 
 namespace Donation.Api.Extensions;
 
@@ -28,6 +29,18 @@ public static class ServiceExtensions
                 ValidIssuer = jwtSettings["Issuer"],
                 ValidAudience = jwtSettings["Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!))
+            };
+
+            // === الإضافة الجديدة لضمان إرجاع كود 401 صريح للـ API وعدم تحويل الطلب ===
+            options.Events = new JwtBearerEvents
+            {
+                OnChallenge = context =>
+                {
+                    context.HandleResponse(); // إلغاء السلوك الافتراضي لأي تحويل
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    context.Response.ContentType = "application/json";
+                    return context.Response.WriteAsync("{\"message\": \"Unauthorized. Please login first.\"}");
+                }
             };
         });
 

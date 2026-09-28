@@ -7,6 +7,7 @@ using Donation.Infrastructure.Persistence.Seeders;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,9 +51,17 @@ builder.Services.PostConfigure<Microsoft.AspNetCore.Authentication.Authenticatio
     options.DefaultForbidScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
 });
 
-// 5. سياسات الصلاحيات (Authorization Policies)
+// ==========================================
+// 5. سياسات الصلاحيات + فرض الحماية العامة (FallbackPolicy)
+// ==========================================
 builder.Services.AddAuthorization(options =>
 {
+    // فرض الحماية على كل الـ Endpoints تلقائياً (تتطلب تسجيل دخول حصراً)
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+
+    // السياسات الخاصة بالصلاحيات (Permissions)
     foreach (var permission in Donation.Application.Constants.Permissions.AllPermissionsList)
     {
         options.AddPolicy(permission, policy =>
@@ -63,7 +72,7 @@ builder.Services.AddAuthorization(options =>
 var app = builder.Build();
 
 // ==========================================
-// تشغيل الـ Seeder هنا لإدخال الأدوار والآدمن تلقائياً
+// تشغيل الـ Seeder لإدخال الأدوار والآدمن تلقائياً
 // ==========================================
 using (var scope = app.Services.CreateScope())
 {
@@ -83,8 +92,8 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "An error occurred during database migration/seeding.");
     }
 }
-// ==========================================
 
+// ==========================================
 // Configure the HTTP request pipeline.
 app.UseSwaggerDocumentation();
 
