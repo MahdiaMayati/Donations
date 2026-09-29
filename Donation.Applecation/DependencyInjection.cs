@@ -20,6 +20,7 @@ public static class DependencyInjection
         services.AddScoped<ICityDependencyChecker, CityDependencyChecker>();
         services.AddScoped<IAreaDependencyChecker, AreaDependencyChecker>();
         services.AddScoped<IAddressDependencyChecker, AddressDependencyChecker>();
+        services.AddScoped<IOrganizationDependencyChecker, OrganizationDependencyChecker>();
 
         return services;
     }

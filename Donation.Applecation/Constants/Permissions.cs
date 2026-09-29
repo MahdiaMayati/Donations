@@ -42,6 +42,14 @@ public static class Permissions
         public const string Delete = "Permissions.Addresses.Delete";
     }
 
+    public static class Organizations
+    {
+        public const string View = "Permissions.Organizations.View";
+        public const string Create = "Permissions.Organizations.Create";
+        public const string Edit = "Permissions.Organizations.Edit";
+        public const string Delete = "Permissions.Organizations.Delete";
+    }
+
     public static List<string> AllPermissionsList =>
         new List<string>
         {
@@ -64,6 +72,10 @@ public static class Permissions
             Addresses.View,
             Addresses.Create,
             Addresses.Edit,
-            Addresses.Delete
+            Addresses.Delete,
+            Organizations.View,
+            Organizations.Create,
+            Organizations.Edit,
+            Organizations.Delete
         };
 }

@@ -12,5 +12,6 @@ public interface IAppDbContext
     DbSet<City> Cities { get; }
     DbSet<Area> Areas { get; }
     DbSet<Address> Addresses { get; }
+    DbSet<Organization> Organizations { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

@@ -32,6 +32,27 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken)
     {
+        if (request.OrganizationId == Guid.Empty)
+        {
+            throw new Exception("OrganizationId is required.");
+        }
+
+        var organization = await _context.Organizations
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                o => o.Id == request.OrganizationId && !o.IsDeleted,
+                cancellationToken);
+
+        if (organization is null)
+        {
+            throw new Exception("Organization not found.");
+        }
+
+        if (!organization.IsActive)
+        {
+            throw new Exception("Organization is inactive.");
+        }
+
         var existingUser = await _userManager.FindByEmailAsync(request.Email);
         if (existingUser != null)
         {
@@ -41,10 +62,18 @@ public class AuthService : IAuthService
         var user = new User
         {
             UserName = request.Email,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Email = request.Email,
-            IsActive = true
+            FirstName = request.FirstName.Trim(),
+            LastName = request.LastName.Trim(),
+            Email = request.Email.Trim(),
+            IsActive = true,
+            OrganizationId = request.OrganizationId,
+            DateOfBirth = request.DateOfBirth?.Date,
+            Gender = request.Gender!.Value,
+            PreferredContactMethod = request.PreferredContactMethod.Trim(),
+            MaritalStatus = request.MaritalStatus.Trim(),
+            EducationalStatus = request.EducationalStatus.Trim(),
+            Job = request.Job.Trim(),
+            HealthStatus = request.HealthStatus.Trim()
         };
 
         var result = await _userManager.CreateAsync(user, request.Password);
