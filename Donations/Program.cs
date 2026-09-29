@@ -147,10 +147,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwaggerDocumentation();
-}
+app.UseSwaggerDocumentation();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
