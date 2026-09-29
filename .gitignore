@@ -229,7 +229,3 @@ Desktop.ini
 .LSOverride
 .vs/
 
-# Ignore development appsettings
-appsettings.Development.json
-**/appsettings.Development.json
-

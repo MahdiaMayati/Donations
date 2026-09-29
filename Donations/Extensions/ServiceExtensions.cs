@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -8,18 +9,26 @@ namespace Donation.Api.Extensions;
 
 public static class ServiceExtensions
 {
+    /// <summary>
+    /// Registers JWT Bearer as the default scheme.
+    /// Call AFTER AddIdentity so cookie defaults are not left as the active scheme.
+    /// </summary>
     public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         var jwtSettings = configuration.GetSection("JwtSettings");
-        var secretKey = jwtSettings["Secret"];
+        var secretKey = jwtSettings["Secret"]
+            ?? throw new InvalidOperationException("JwtSettings:Secret is missing.");
 
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
         })
         .AddJwtBearer(options =>
         {
+            options.MapInboundClaims = false;
+
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -28,7 +37,10 @@ public static class ServiceExtensions
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = jwtSettings["Issuer"],
                 ValidAudience = jwtSettings["Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+                ClockSkew = TimeSpan.Zero,
+                NameClaimType = JwtRegisteredClaimNames.Sub,
+                RoleClaimType = "role"
             };
 
             // === الإضافة الجديدة لضمان إرجاع كود 401 صريح للـ API وعدم تحويل الطلب ===
@@ -60,7 +72,7 @@ public static class ServiceExtensions
                 Scheme = "Bearer",
                 BearerFormat = "JWT",
                 In = ParameterLocation.Header,
-                Description = "أدخل الـ Token بهذا الشكل: Bearer YOUR_TOKEN_HERE"
+                Description = "Paste the JWT access token only (without the word Bearer). Example: eyJhbGciOiJIUzI1NiIs..."
             });
 
             c.AddSecurityRequirement(new OpenApiSecurityRequirement

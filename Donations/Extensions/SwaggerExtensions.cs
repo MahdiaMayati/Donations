@@ -14,10 +14,14 @@ public static class SwaggerExtensions
             {
                 Name = "Authorization",
                 Type = SecuritySchemeType.Http,
-                Scheme = "Bearer",
+                Scheme = "bearer",
                 BearerFormat = "JWT",
                 In = ParameterLocation.Header,
-                Description = "أدخل الـ Token بهذا الشكل: Bearer YOUR_TOKEN_HERE"
+                Description =
+                    "Paste ONLY the access token from /api/Auth/login (the value of \"token\").\n" +
+                    "Do NOT paste refreshToken.\n" +
+                    "Do NOT type the word Bearer — Swagger adds it.\n" +
+                    "Do NOT include quotes."
             });
 
             c.AddSecurityRequirement(new OpenApiSecurityRequirement

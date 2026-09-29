@@ -50,6 +50,38 @@ public static class Permissions
         public const string Delete = "Permissions.Organizations.Delete";
     }
 
+    public static class Donors
+    {
+        public const string View = "Permissions.Donors.View";
+        public const string Create = "Permissions.Donors.Create";
+        public const string Edit = "Permissions.Donors.Edit";
+        public const string Delete = "Permissions.Donors.Delete";
+    }
+
+    public static class Beneficiaries
+    {
+        public const string View = "Permissions.Beneficiaries.View";
+        public const string Create = "Permissions.Beneficiaries.Create";
+        public const string Edit = "Permissions.Beneficiaries.Edit";
+        public const string Delete = "Permissions.Beneficiaries.Delete";
+    }
+
+    public static class FamilyMembers
+    {
+        public const string View = "Permissions.FamilyMembers.View";
+        public const string Create = "Permissions.FamilyMembers.Create";
+        public const string Edit = "Permissions.FamilyMembers.Edit";
+        public const string Delete = "Permissions.FamilyMembers.Delete";
+    }
+
+    public static class Volunteers
+    {
+        public const string View = "Permissions.Volunteers.View";
+        public const string Create = "Permissions.Volunteers.Create";
+        public const string Edit = "Permissions.Volunteers.Edit";
+        public const string Delete = "Permissions.Volunteers.Delete";
+    }
+
     public static List<string> AllPermissionsList =>
         new List<string>
         {
@@ -76,6 +108,22 @@ public static class Permissions
             Organizations.View,
             Organizations.Create,
             Organizations.Edit,
-            Organizations.Delete
+            Organizations.Delete,
+            Donors.View,
+            Donors.Create,
+            Donors.Edit,
+            Donors.Delete,
+            Beneficiaries.View,
+            Beneficiaries.Create,
+            Beneficiaries.Edit,
+            Beneficiaries.Delete,
+            FamilyMembers.View,
+            FamilyMembers.Create,
+            FamilyMembers.Edit,
+            FamilyMembers.Delete,
+            Volunteers.View,
+            Volunteers.Create,
+            Volunteers.Edit,
+            Volunteers.Delete
         };
 }

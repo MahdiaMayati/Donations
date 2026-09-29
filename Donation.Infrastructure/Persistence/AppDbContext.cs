@@ -20,6 +20,11 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
     public DbSet<Area> Areas => Set<Area>();
     public DbSet<Address> Addresses => Set<Address>();
     public DbSet<Organization> Organizations => Set<Organization>();
+    public DbSet<Donor> Donors => Set<Donor>();
+    public DbSet<Beneficiary> Beneficiaries => Set<Beneficiary>();
+    public DbSet<FamilyMember> FamilyMembers => Set<FamilyMember>();
+    public DbSet<Volunteer> Volunteers => Set<Volunteer>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
