@@ -30,13 +30,65 @@ Unified response shape:
 |--------|------|-------------|
 | GET | `/api/Beneficiaries` | Own (Admin: all); excludes soft-deleted |
 | GET | `/api/Beneficiaries/{id}` | Get by id |
-| POST | `/api/Beneficiaries` | Create: `addressId` (>0), `idPhotoUrl`, `isHeadOfHousehold`. Sets `verificationStatus=Pending`, `createdAt=UtcNow`, `isDeleted=false`. Duplicate UserId → 409 |
+| POST | `/api/Beneficiaries` | Combined registration: update current-user profile + link existing City by id + find/create Area→Address + create Beneficiary (single DB transaction). System sets `userId` (current user), `verificationStatus=Pending`, `verifiedUntil=null`, `createdAt=UtcNow`, `isDeleted=false`. Duplicate UserId → 409 |
 | PUT | `/api/Beneficiaries/{id}` | Update address/photo/head-of-household. Admin may also set `verificationStatus`, `verifiedUntil` |
 | DELETE | `/api/Beneficiaries/{id}` | Soft delete (`isDeleted=true`) |
 
-**CreateBeneficiaryRequest:** `addressId`, `idPhotoUrl`, `isHeadOfHousehold`  
-**UpdateBeneficiaryRequest:** same + optional `verificationStatus`, `verifiedUntil` (Admin only)  
-**BeneficiaryResponse:** all entity fields
+**CreateBeneficiaryRequest (combined payload):**
+
+```json
+{
+  "user": {
+    "firstName": "string",
+    "lastName": "string",
+    "phoneNumber": "string?",
+    "dateOfBirth": "date?",
+    "gender": true,
+    "preferredContactMethod": "WhatsApp|Call|SMS",
+    "maritalStatus": "string",
+    "educationalStatus": "string",
+    "job": "string",
+    "healthStatus": "string"
+  },
+  "city": { "id": 1 },
+  "area": { "name": "string" },
+  "address": {
+    "street": "string",
+    "details": "string",
+    "latitude": 0,
+    "longitude": 0
+  },
+  "idPhotoUrl": "string",
+  "isHeadOfHousehold": true
+}
+```
+
+**Location resolution rules (inside one transaction):**
+
+| Section | Request fields | Behavior |
+|---------|----------------|----------|
+| City | `id` only | Must reference an existing city (`id > 0`); never created here. Missing → 404 |
+| Area | `name` only | Find by name under the resolved city (case-insensitive), otherwise create |
+| Address | `street`, `details`, `latitude`, `longitude` | Find by street+details+area+user, otherwise create (updates coordinates if found) |
+
+Notes:
+- Account `email`/`password` are **not** part of this payload — register via `/api/Auth/register`, then call this endpoint authenticated.
+- `user` fields update the authenticated user's profile (same fields as profile update + optional `phoneNumber`).
+- City is selected by id only (`name`/`code` are not accepted on this endpoint).
+- Area and address are never linked by id on create; they are found or created from the provided input fields.
+
+**UpdateBeneficiaryRequest:** `addressId`, `idPhotoUrl`, `isHeadOfHousehold` + optional `verificationStatus`, `verifiedUntil` (Admin only; ignored for non-admin)  
+
+**BeneficiaryResponse (uniform across GET list, GET by id, POST, PUT):**
+
+| Group | Fields |
+|-------|--------|
+| System | `id`, `userId`, `verificationStatus`, `isVerified` (derived), `verifiedUntil`, `createdAt`, `isDeleted` |
+| User profile | `firstName`, `lastName`, `email`, `phoneNumber`, `dateOfBirth`, `gender`, `preferredContactMethod`, `maritalStatus`, `educationalStatus`, `job`, `healthStatus`, `organizationId` |
+| Location | `addressId`, `cityName` (string only — no city id/object), `street`, `addressDetails` |
+| Beneficiary | `idPhotoUrl`, `isHeadOfHousehold` |
+
+Mapping is centralized in `Features/Beneficiaries/Mappings/BeneficiaryMappings.ToResponseExpression()`.
 
 Note: `addressId` must reference an existing Address (FK). Missing address → 404.
 

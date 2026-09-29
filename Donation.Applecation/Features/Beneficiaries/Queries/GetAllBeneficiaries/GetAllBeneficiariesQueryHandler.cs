@@ -2,6 +2,7 @@ using Donation.Application.Abstractions.Persistence;
 using Donation.Application.Abstractions.Services;
 using Donation.Application.Common.Exceptions;
 using Donation.Application.DTOs.Beneficiary.Response;
+using Donation.Application.Features.Beneficiaries.Mappings;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,18 +37,7 @@ public sealed class GetAllBeneficiariesQueryHandler : IRequestHandler<GetAllBene
 
         return await query
             .OrderByDescending(b => b.Id)
-            .Select(b => new BeneficiaryResponse
-            {
-                Id = b.Id,
-                UserId = b.UserId,
-                AddressId = b.AddressId,
-                IdPhotoUrl = b.IdPhotoUrl,
-                IsHeadOfHousehold = b.IsHeadOfHousehold,
-                VerificationStatus = b.VerificationStatus,
-                VerifiedUntil = b.VerifiedUntil,
-                CreatedAt = b.CreatedAt,
-                IsDeleted = b.IsDeleted
-            })
+            .Select(BeneficiaryMappings.ToResponseExpression())
             .ToListAsync(cancellationToken);
     }
 }

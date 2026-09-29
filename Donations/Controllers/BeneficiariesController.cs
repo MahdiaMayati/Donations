@@ -63,7 +63,13 @@ public class BeneficiariesController : BaseController
         try
         {
             var item = await _sender.Send(
-                new CreateBeneficiaryCommand(request.AddressId, request.IdPhotoUrl, request.IsHeadOfHousehold),
+                new CreateBeneficiaryCommand(
+                    request.User,
+                    request.City,
+                    request.Area,
+                    request.Address,
+                    request.IdPhotoUrl,
+                    request.IsHeadOfHousehold),
                 cancellationToken);
 
             return CustomResponse(item, "Beneficiary created successfully.", StatusCodes.Status201Created);
