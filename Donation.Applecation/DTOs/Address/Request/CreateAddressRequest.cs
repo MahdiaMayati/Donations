@@ -1,0 +1,10 @@
+namespace Donation.Application.DTOs.Address.Request;
+
+public class CreateAddressRequest
+{
+    public int AreaId { get; set; }
+    public string Street { get; set; } = string.Empty;
+    public string Details { get; set; } = string.Empty;
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
+}
