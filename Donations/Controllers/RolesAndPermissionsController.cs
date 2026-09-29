@@ -1,5 +1,6 @@
-﻿using Donation.Domain.Entities; // تأكدي من تطابق الـ Namespace لديكِ
+﻿using Donation.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,10 +9,9 @@ namespace Donation.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-// [Authorize(Roles = "Admin")] // يفضل تفعيلها لاحقاً لحماية الـ Endpoints
 public class RolesAndPermissionsController : ControllerBase
 {
-    private readonly RoleManager<Role> _roleManager; // استخدام كلاس Role الخاص بكِ
+    private readonly RoleManager<Role> _roleManager;
     private readonly UserManager<User> _userManager;
 
     public RolesAndPermissionsController(
@@ -22,11 +22,8 @@ public class RolesAndPermissionsController : ControllerBase
         _userManager = userManager;
     }
 
-    // ==========================================
-    // 1. إدارة الأدوار (Roles: Create, Update, Delete, Get All)
-    // ==========================================
-
     [HttpGet("roles")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "AdminOnly")]
     public async Task<IActionResult> GetAllRoles()
     {
         var roles = await _roleManager.Roles.Select(r => new { r.Id, r.Name }).ToListAsync();
