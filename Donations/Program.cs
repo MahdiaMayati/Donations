@@ -1,8 +1,9 @@
-﻿using Donations.Extensions;
-using Donation.Infrastructure;
+﻿using Donation.Application;
 using Donation.Domain.Entities;
+using Donation.Infrastructure;
 using Donation.Infrastructure.Persistence;
 using Donation.Infrastructure.Persistence.Seeders;
+using Donations.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -18,6 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerDocumentation();
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 // ==========================================
