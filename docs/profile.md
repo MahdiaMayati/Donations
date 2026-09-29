@@ -16,13 +16,15 @@ Unified response shape:
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/api/Donors` | Own donors (Admin: all) |
-| GET | `/api/Donors/{id}` | Get by id (owner or Admin) |
-| POST | `/api/Donors` | Create donor for current user (`Status` N/A). Body optional/empty. Duplicate UserId → 409 |
-| PUT | `/api/Donors/{id}` | Idempotent update (no mutable fields); returns current donor |
-| DELETE | `/api/Donors/{id}` | Hard delete |
+| GET | `/api/Donors` | Own donors with profile + address (Admin: all) |
+| GET | `/api/Donors/{id}` | Profile: fullName, email, phone, masked password, preferredContactMethod, address |
+| POST | `/api/Donors` | Create donor for current user; updates user profile + creates address. Duplicate → 409 |
+| PUT | `/api/Donors/{id}` | Partial/full update of profile fields and/or address |
+| DELETE | `/api/Donors/{id}` | Hard delete by id only (no body) |
 
-**DonorResponse:** `id`, `userId`
+**CreateDonorRequest:** `fullName`, `email`, `phoneNumber`, `password`, `preferredContactMethod` (WhatsApp\|Call\|SMS), `address` (`areaId`, `street`, `details`, `latitude`, `longitude`)  
+**UpdateDonorRequest:** same fields optional (omit to leave unchanged)  
+**DonorResponse:** profile fields + `password: "********"` (never real hash) + nested `address`
 
 ## Beneficiaries — `api/Beneficiaries`
 

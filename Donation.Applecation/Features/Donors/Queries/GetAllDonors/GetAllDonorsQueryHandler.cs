@@ -25,20 +25,36 @@ public sealed class GetAllDonorsQueryHandler : IRequestHandler<GetAllDonorsQuery
             throw new ForbiddenException("Authentication is required.");
         }
 
-        var query = _context.Donors.AsNoTracking();
+        var query = _context.Donors
+            .AsNoTracking()
+            .Include(d => d.User)
+            .AsQueryable();
 
         if (!_currentUser.IsAdmin)
         {
             query = query.Where(d => d.UserId == _currentUser.UserId.Value);
         }
 
-        return await query
+        var donors = await query
             .OrderByDescending(d => d.Id)
-            .Select(d => new DonorResponse
-            {
-                Id = d.Id,
-                UserId = d.UserId
-            })
             .ToListAsync(cancellationToken);
+
+        var userIds = donors.Select(d => d.UserId).Distinct().ToList();
+
+        var addresses = await _context.Addresses
+            .AsNoTracking()
+            .Where(a => userIds.Contains(a.UserId))
+            .ToListAsync(cancellationToken);
+
+        var addressByUser = addresses
+            .GroupBy(a => a.UserId)
+            .ToDictionary(g => g.Key, g => g.OrderByDescending(a => a.Id).First());
+
+        return donors
+            .Select(d => DonorMapping.ToResponse(
+                d,
+                d.User,
+                addressByUser.GetValueOrDefault(d.UserId)))
+            .ToList();
     }
 }

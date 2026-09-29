@@ -58,11 +58,20 @@ public class DonorsController : BaseController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateDonorRequest? request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create([FromBody] CreateDonorRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            var donor = await _sender.Send(new CreateDonorCommand(), cancellationToken);
+            var donor = await _sender.Send(
+                new CreateDonorCommand(
+                    request.FullName,
+                    request.Email,
+                    request.PhoneNumber,
+                    request.Password,
+                    request.PreferredContactMethod,
+                    request.Address),
+                cancellationToken);
+
             return CustomResponse(donor, "Donor created successfully.", StatusCodes.Status201Created);
         }
         catch (ValidationException ex)
@@ -76,18 +85,36 @@ public class DonorsController : BaseController
         {
             return CustomErrorResponse(ex.Message, StatusCodes.Status409Conflict);
         }
+        catch (NotFoundException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status404NotFound);
+        }
         catch (ForbiddenException ex)
         {
             return CustomErrorResponse(ex.Message, StatusCodes.Status403Forbidden);
         }
+        catch (BusinessRuleException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status400BadRequest);
+        }
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateDonorRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            var donor = await _sender.Send(new UpdateDonorCommand(id), cancellationToken);
+            var donor = await _sender.Send(
+                new UpdateDonorCommand(
+                    id,
+                    request.FullName,
+                    request.Email,
+                    request.PhoneNumber,
+                    request.Password,
+                    request.PreferredContactMethod,
+                    request.Address),
+                cancellationToken);
+
             if (donor is null)
             {
                 return CustomErrorResponse("Donor not found.", StatusCodes.Status404NotFound);
@@ -102,9 +129,21 @@ public class DonorsController : BaseController
                 StatusCodes.Status400BadRequest,
                 ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
         }
+        catch (ConflictException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status409Conflict);
+        }
+        catch (NotFoundException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status404NotFound);
+        }
         catch (ForbiddenException ex)
         {
             return CustomErrorResponse(ex.Message, StatusCodes.Status403Forbidden);
+        }
+        catch (BusinessRuleException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status400BadRequest);
         }
     }
 
