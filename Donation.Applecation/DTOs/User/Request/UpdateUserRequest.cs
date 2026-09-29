@@ -1,19 +1,14 @@
-﻿namespace Donation.Application.DTOs.Auth.Request;
+namespace Donation.Application.DTOs.User.Request;
 
-public class RegisterRequest
+public class UpdateUserRequest
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
-    public Guid OrganizationId { get; set; }
-
     public DateTime? DateOfBirth { get; set; }
 
-    /// <summary>true = Male, false = Female. Required on registration.</summary>
+    /// <summary>true = Male, false = Female.</summary>
     public bool? Gender { get; set; }
 
-    /// <summary>Suggested values: WhatsApp, Call, SMS.</summary>
     public string PreferredContactMethod { get; set; } = string.Empty;
     public string MaritalStatus { get; set; } = string.Empty;
     public string EducationalStatus { get; set; } = string.Empty;

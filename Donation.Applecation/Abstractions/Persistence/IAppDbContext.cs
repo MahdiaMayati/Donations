@@ -12,6 +12,7 @@ public interface IAppDbContext
     DbSet<City> Cities { get; }
     DbSet<Area> Areas { get; }
     DbSet<Address> Addresses { get; }
+    DbSet<Organization> Organizations { get; }
     DbSet<Donor> Donors { get; }
     DbSet<Beneficiary> Beneficiaries { get; }
     DbSet<FamilyMember> FamilyMembers { get; }

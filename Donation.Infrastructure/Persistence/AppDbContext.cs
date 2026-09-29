@@ -15,9 +15,11 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public new DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<City> Cities => Set<City>();
     public DbSet<Area> Areas => Set<Area>();
     public DbSet<Address> Addresses => Set<Address>();
+    public DbSet<Organization> Organizations => Set<Organization>();
     public DbSet<Donor> Donors => Set<Donor>();
     public DbSet<Beneficiary> Beneficiaries => Set<Beneficiary>();
     public DbSet<FamilyMember> FamilyMembers => Set<FamilyMember>();

@@ -26,21 +26,59 @@ public class RolesAndPermissionsController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "AdminOnly")]
     public async Task<IActionResult> GetAllRoles()
     {
-        var roles = await _roleManager.Roles.Select(r => new { r.Id, r.Name }).ToListAsync();
+        var roles = await _roleManager.Roles
+            .Where(r => !r.IsDeleted)
+            .Select(r => new
+            {
+                r.Id,
+                r.OrganizationId,
+                r.Name,
+                r.IsPreset,
+                r.CreatedAt,
+                r.IsDeleted,
+                r.RoleLevel,
+                r.Description
+            })
+            .ToListAsync();
         return Ok(roles);
     }
 
     [HttpPost("roles")]
-    public async Task<IActionResult> CreateRole([FromBody] CreateRoleRequest request)
+    public async Task<IActionResult> CreateRole(
+        [FromBody] CreateRoleRequest request,
+        [FromServices] AppDbContext context,
+        CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.RoleName))
             return BadRequest("اسم الدور مطلوب.");
+
+        if (request.OrganizationId == Guid.Empty)
+            return BadRequest("OrganizationId is required.");
+
+        var organization = await context.Organizations
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                o => o.Id == request.OrganizationId && !o.IsDeleted,
+                cancellationToken);
+
+        if (organization is null)
+            return NotFound("Organization not found.");
+
+        if (!organization.IsActive)
+            return BadRequest("Organization is inactive.");
 
         var roleExist = await _roleManager.RoleExistsAsync(request.RoleName);
         if (roleExist)
             return BadRequest("هذا الدور موجود مسبقاً.");
 
-        var result = await _roleManager.CreateAsync(new Role { Name = request.RoleName });
+        var result = await _roleManager.CreateAsync(new Role
+        {
+            Name = request.RoleName,
+            OrganizationId = request.OrganizationId,
+            IsPreset = false,
+            IsDeleted = false,
+            CreatedAt = DateTime.UtcNow
+        });
         if (!result.Succeeded)
             return BadRequest(result.Errors);
 
@@ -79,12 +117,17 @@ public class RolesAndPermissionsController : ControllerBase
     // 2. إدارة الصلاحيات (Permissions & Assignment)
     // ==========================================
 
-    // جلب كل الصلاحيات الثابتة في النظام
+    // جلب كل الصلاحيات من قاعدة البيانات (Id, Code, Description)
     [HttpGet("permissions")]
-    public IActionResult GetAllPermissions()
+    public async Task<IActionResult> GetAllPermissions([FromServices] AppDbContext context, CancellationToken cancellationToken)
     {
-        var allPermissions = Donation.Application.Constants.Permissions.AllPermissionsList;
-        return Ok(allPermissions);
+        var permissions = await context.Permissions
+            .AsNoTracking()
+            .OrderBy(p => p.Code)
+            .Select(p => new { p.Id, p.Code, p.Description })
+            .ToListAsync(cancellationToken);
+
+        return Ok(permissions);
     }
 
     // جلب الصلاحيات الخاصة بدور معين
@@ -161,6 +204,7 @@ public class RolesAndPermissionsController : ControllerBase
 public class CreateRoleRequest
 {
     public string RoleName { get; set; } = string.Empty;
+    public Guid OrganizationId { get; set; }
 }
 
 public class UpdateRoleRequest
