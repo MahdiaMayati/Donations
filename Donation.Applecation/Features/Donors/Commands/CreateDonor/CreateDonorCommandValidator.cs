@@ -37,7 +37,7 @@ public sealed class CreateDonorCommandValidator : AbstractValidator<CreateDonorC
         RuleFor(x => x.Address).NotNull().WithMessage("Address is required.");
 
         RuleFor(x => x.Address.AreaId)
-            .GreaterThan(0).WithMessage("Address.AreaId must be greater than zero.")
+            .NotEmpty().WithMessage("Address.AreaId is required.")
             .When(x => x.Address is not null);
 
         RuleFor(x => x.Address.Street)

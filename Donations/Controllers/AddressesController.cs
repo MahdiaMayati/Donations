@@ -25,7 +25,7 @@ public class AddressesController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] int? areaId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] Guid? areaId, CancellationToken cancellationToken)
     {
         try
         {
@@ -38,8 +38,8 @@ public class AddressesController : BaseController
         }
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         try
         {
@@ -90,8 +90,8 @@ public class AddressesController : BaseController
         }
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateAddressRequest request, CancellationToken cancellationToken)
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateAddressRequest request, CancellationToken cancellationToken)
     {
         try
         {
@@ -129,8 +129,8 @@ public class AddressesController : BaseController
         }
     }
 
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         try
         {

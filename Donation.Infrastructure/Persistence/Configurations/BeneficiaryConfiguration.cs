@@ -11,6 +11,9 @@ public class BeneficiaryConfiguration : IEntityTypeConfiguration<Beneficiary>
         builder.ToTable("Beneficiaries");
         builder.HasKey(b => b.Id);
 
+        builder.Property(b => b.Id)
+            .HasDefaultValueSql("NEWSEQUENTIALID()");
+
         builder.Property(b => b.IdPhotoUrl)
             .IsRequired()
             .HasMaxLength(500);

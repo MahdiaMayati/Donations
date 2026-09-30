@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Donation.Application.Features.Addresses.Queries.GetAddressById;
 
-public sealed record GetAddressByIdQuery(int Id) : IRequest<AddressResponse?>;
+public sealed record GetAddressByIdQuery(Guid Id) : IRequest<AddressResponse?>;

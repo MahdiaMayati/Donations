@@ -5,8 +5,8 @@ using MediatR;
 namespace Donation.Application.Features.Beneficiaries.Commands.UpdateBeneficiary;
 
 public sealed record UpdateBeneficiaryCommand(
-    int Id,
-    int AddressId,
+    Guid Id,
+    Guid AddressId,
     string IdPhotoUrl,
     bool IsHeadOfHousehold,
     VerificationStatus? VerificationStatus,

@@ -11,6 +11,9 @@ public class AreaConfiguration : IEntityTypeConfiguration<Area>
         builder.ToTable("Areas");
         builder.HasKey(a => a.Id);
 
+        builder.Property(a => a.Id)
+            .HasDefaultValueSql("NEWSEQUENTIALID()");
+
         builder.Property(a => a.Name)
             .IsRequired()
             .HasMaxLength(200);

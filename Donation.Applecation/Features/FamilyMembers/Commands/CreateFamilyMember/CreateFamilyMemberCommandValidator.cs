@@ -7,7 +7,7 @@ public sealed class CreateFamilyMemberCommandValidator : AbstractValidator<Creat
     public CreateFamilyMemberCommandValidator()
     {
         RuleFor(x => x.BeneficiaryId)
-            .GreaterThan(0).WithMessage("BeneficiaryId must be greater than zero.");
+            .NotEmpty().WithMessage("BeneficiaryId is required.");
 
         RuleFor(x => x.FullName)
             .Cascade(CascadeMode.Stop)

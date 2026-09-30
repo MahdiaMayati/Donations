@@ -78,7 +78,12 @@ public sealed class CreateDonorCommandHandler : IRequestHandler<CreateDonorComma
         };
         _context.Addresses.Add(address);
 
-        var donor = new Donor { UserId = userId };
+        var donor = new Donor
+        {
+            UserId = userId,
+            IsDeleted = false,
+            DeletedAt = null
+        };
         _context.Donors.Add(donor);
 
         await _context.SaveChangesAsync(cancellationToken);

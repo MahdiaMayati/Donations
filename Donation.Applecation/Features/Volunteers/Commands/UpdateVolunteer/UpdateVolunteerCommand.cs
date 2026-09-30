@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Donation.Application.Features.Volunteers.Commands.UpdateVolunteer;
 
-public sealed record UpdateVolunteerCommand(int Id, VolunteerStatus Status) : IRequest<VolunteerResponse?>;
+public sealed record UpdateVolunteerCommand(Guid Id, VolunteerStatus Status) : IRequest<VolunteerResponse?>;

@@ -31,9 +31,9 @@ public class CitiesController : BaseController
         return CustomResponse(cities, "Cities retrieved successfully.");
     }
 
-    [HttpGet("{id:int}")]
+    [HttpGet("{id:guid}")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         var city = await _sender.Send(new GetCityByIdQuery(id), cancellationToken);
         if (city is null)
@@ -66,9 +66,9 @@ public class CitiesController : BaseController
         }
     }
 
-    [HttpPut("{id:int}")]
+    [HttpPut("{id:guid}")]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateCityRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCityRequest request, CancellationToken cancellationToken)
     {
         try
         {
@@ -93,9 +93,9 @@ public class CitiesController : BaseController
         }
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id:guid}")]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         try
         {

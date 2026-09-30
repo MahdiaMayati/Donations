@@ -7,7 +7,7 @@ public sealed class CreateAreaCommandValidator : AbstractValidator<CreateAreaCom
     public CreateAreaCommandValidator()
     {
         RuleFor(x => x.CityId)
-            .GreaterThan(0).WithMessage("CityId must be greater than zero.");
+            .NotEmpty().WithMessage("CityId is required.");
 
         RuleFor(x => x.Name)
             .Cascade(CascadeMode.Stop)

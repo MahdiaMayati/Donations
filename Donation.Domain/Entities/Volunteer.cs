@@ -4,7 +4,7 @@ namespace Donation.Domain.Entities;
 
 public class Volunteer
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public Guid UserId { get; set; }
     public VolunteerStatus Status { get; set; } = VolunteerStatus.Pending;
 

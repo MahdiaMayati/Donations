@@ -7,7 +7,7 @@ public sealed class UpdateVolunteerCommandValidator : AbstractValidator<UpdateVo
     public UpdateVolunteerCommandValidator()
     {
         RuleFor(x => x.Id)
-            .GreaterThan(0).WithMessage("Id must be greater than zero.");
+            .NotEmpty().WithMessage("Id is required.");
 
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage("Status is invalid.");

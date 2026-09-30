@@ -2,6 +2,8 @@
 
 CQRS endpoints for Donor, Beneficiary, FamilyMember, and Volunteer profiles.
 
+Entity primary keys and location FKs (`City` / `Area` / `Address` / profile entities) use **`Guid`** (routes: `{id:guid}`).
+
 All endpoints require JWT Bearer authentication (`[Authorize]`).
 Ownership: users manage only their own records; Admin/SuperAdmin can manage all.
 Create always assigns `UserId` from the current user (client-supplied UserId is ignored).
@@ -17,10 +19,12 @@ Unified response shape:
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/api/Donors` | Own donors with profile + address (Admin: all) |
+| GET | `/api/Donors/deleted` | **Admin only** — soft-deleted donors (`IgnoreQueryFilters`) |
 | GET | `/api/Donors/{id}` | Profile: fullName, email, phone, masked password, preferredContactMethod, address |
 | POST | `/api/Donors` | Create donor for current user; updates user profile + creates address. Duplicate → 409 |
+| POST | `/api/Donors/{id}/restore` | **Admin only** — restore soft-deleted donor (`IsDeleted=false`, `DeletedAt=null`) |
 | PUT | `/api/Donors/{id}` | Partial/full update of profile fields and/or address |
-| DELETE | `/api/Donors/{id}` | Hard delete by id only (no body) |
+| DELETE | `/api/Donors/{id}` | Soft delete (`IsDeleted=true`, `DeletedAt=UtcNow`); related User/Address untouched |
 
 **CreateDonorRequest:** `fullName`, `email`, `phoneNumber`, `password`, `preferredContactMethod` (WhatsApp\|Call\|SMS), `address` (`areaId`, `street`, `details`, `latitude`, `longitude`)  
 **UpdateDonorRequest:** same fields optional (omit to leave unchanged)  
@@ -32,7 +36,7 @@ Unified response shape:
 |--------|------|-------------|
 | GET | `/api/Beneficiaries` | Own (Admin: all); excludes soft-deleted |
 | GET | `/api/Beneficiaries/{id}` | Get by id |
-| POST | `/api/Beneficiaries` | Create: `addressId` (>0), `idPhotoUrl`, `isHeadOfHousehold`. Sets `verificationStatus=Pending`, `createdAt=UtcNow`, `isDeleted=false`. Duplicate UserId → 409 |
+| POST | `/api/Beneficiaries` | Create: `addressId` (Guid, required), `idPhotoUrl`, `isHeadOfHousehold`. Sets `verificationStatus=Pending`, `createdAt=UtcNow`, `isDeleted=false`. Duplicate UserId → 409 |
 | PUT | `/api/Beneficiaries/{id}` | Update address/photo/head-of-household. Admin may also set `verificationStatus`, `verifiedUntil` |
 | DELETE | `/api/Beneficiaries/{id}` | Soft delete (`isDeleted=true`) |
 
@@ -80,7 +84,7 @@ Registered in authorization policies via `AllPermissionsList`.
 
 | Entity | Delete behavior |
 |--------|-----------------|
-| Donor | Hard `Remove` |
+| Donor | Soft `IsDeleted = true`, `DeletedAt = UtcNow` |
 | Volunteer | Hard `Remove` |
 | Beneficiary | Soft `IsDeleted = true` |
 | FamilyMember | Soft `IsDeleted = true` |

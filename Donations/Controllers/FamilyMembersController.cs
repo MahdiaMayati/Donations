@@ -25,7 +25,7 @@ public class FamilyMembersController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] int? beneficiaryId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] Guid? beneficiaryId, CancellationToken cancellationToken)
     {
         try
         {
@@ -38,8 +38,8 @@ public class FamilyMembersController : BaseController
         }
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         try
         {
@@ -99,8 +99,8 @@ public class FamilyMembersController : BaseController
         }
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateFamilyMemberRequest request, CancellationToken cancellationToken)
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateFamilyMemberRequest request, CancellationToken cancellationToken)
     {
         try
         {
@@ -147,8 +147,8 @@ public class FamilyMembersController : BaseController
         }
     }
 
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         try
         {

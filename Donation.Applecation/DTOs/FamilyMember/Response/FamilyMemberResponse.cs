@@ -4,8 +4,8 @@ namespace Donation.Application.DTOs.FamilyMember.Response;
 
 public sealed class FamilyMemberResponse
 {
-    public int Id { get; set; }
-    public int BeneficiaryId { get; set; }
+    public Guid Id { get; set; }
+    public Guid BeneficiaryId { get; set; }
     public string FullName { get; set; } = string.Empty;
     public DateTime BirthDate { get; set; }
     public Gender Gender { get; set; }

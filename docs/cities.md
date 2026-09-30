@@ -8,10 +8,10 @@ City CRUD uses **CQRS** (Commands / Queries / Handlers via MediatR) with authori
 
 | Layer | What |
 |--------|------|
-| Domain | `Donation.Domain/Entities/City.cs` |
+| Domain | `Donation.Domain/Entities/City.cs` — `Guid Id` with `NEWSEQUENTIALID()` default |
 | Application | DTOs, Features (Commands/Queries/Validators), MediatR + FluentValidation pipeline |
-| Infrastructure | `AppDbContext.Cities` + EF migration `AddCityEntity` |
-| API | `Donations/Controllers/CitiesController.cs` |
+| Infrastructure | `CityConfiguration`, EF migration `ConvertEntityIdsToGuid` |
+| API | `Donations/Controllers/CitiesController.cs` (`{id:guid}`) |
 
 ## Endpoints
 

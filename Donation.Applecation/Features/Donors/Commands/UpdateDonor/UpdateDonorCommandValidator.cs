@@ -9,7 +9,7 @@ public sealed class UpdateDonorCommandValidator : AbstractValidator<UpdateDonorC
     public UpdateDonorCommandValidator()
     {
         RuleFor(x => x.Id)
-            .GreaterThan(0).WithMessage("Id must be greater than zero.");
+            .NotEmpty().WithMessage("Id is required.");
 
         RuleFor(x => x.FullName)
             .MaximumLength(200)
@@ -39,7 +39,7 @@ public sealed class UpdateDonorCommandValidator : AbstractValidator<UpdateDonorC
         When(x => x.Address is not null, () =>
         {
             RuleFor(x => x.Address!.AreaId)
-                .GreaterThan(0).WithMessage("Address.AreaId must be greater than zero.");
+                .NotEmpty().WithMessage("Address.AreaId is required.");
 
             RuleFor(x => x.Address!.Street)
                 .Cascade(CascadeMode.Stop)

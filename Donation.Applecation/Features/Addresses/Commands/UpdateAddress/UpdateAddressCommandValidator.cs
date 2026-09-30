@@ -7,10 +7,10 @@ public sealed class UpdateAddressCommandValidator : AbstractValidator<UpdateAddr
     public UpdateAddressCommandValidator()
     {
         RuleFor(x => x.Id)
-            .GreaterThan(0).WithMessage("Id must be greater than zero.");
+            .NotEmpty().WithMessage("Id is required.");
 
         RuleFor(x => x.AreaId)
-            .GreaterThan(0).WithMessage("AreaId must be greater than zero.");
+            .NotEmpty().WithMessage("AreaId is required.");
 
         RuleFor(x => x.Street)
             .Cascade(CascadeMode.Stop)

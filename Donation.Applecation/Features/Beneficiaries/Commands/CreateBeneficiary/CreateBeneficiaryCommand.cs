@@ -4,6 +4,6 @@ using MediatR;
 namespace Donation.Application.Features.Beneficiaries.Commands.CreateBeneficiary;
 
 public sealed record CreateBeneficiaryCommand(
-    int AddressId,
+    Guid AddressId,
     string IdPhotoUrl,
     bool IsHeadOfHousehold) : IRequest<BeneficiaryResponse>;

@@ -5,7 +5,7 @@ using MediatR;
 namespace Donation.Application.Features.Donors.Commands.UpdateDonor;
 
 public sealed record UpdateDonorCommand(
-    int Id,
+    Guid Id,
     string? FullName,
     string? Email,
     string? PhoneNumber,
