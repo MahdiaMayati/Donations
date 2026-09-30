@@ -35,16 +35,16 @@ Unified response shape:
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/api/Beneficiaries` | Own (Admin: all); excludes soft-deleted |
+| GET | `/api/Beneficiaries/deleted` | Soft-deleted beneficiaries |
 | GET | `/api/Beneficiaries/{id}` | Get by id |
-| POST | `/api/Beneficiaries` | Create: `addressId` (Guid, required), `idPhotoUrl`, `isHeadOfHousehold`. Sets `verificationStatus=Pending`, `createdAt=UtcNow`, `isDeleted=false`. Duplicate UserId → 409 |
+| POST | `/api/Beneficiaries` | Combined registration: update current-user profile + link existing City by Guid + find/create Area→Address + create Beneficiary (single DB transaction). Duplicate UserId → 409 |
+| POST | `/api/Beneficiaries/{id}/restore` | Restore soft-deleted beneficiary |
 | PUT | `/api/Beneficiaries/{id}` | Update address/photo/head-of-household. Admin may also set `verificationStatus`, `verifiedUntil` |
 | DELETE | `/api/Beneficiaries/{id}` | Soft delete (`isDeleted=true`) |
 
-**CreateBeneficiaryRequest:** `addressId`, `idPhotoUrl`, `isHeadOfHousehold`  
-**UpdateBeneficiaryRequest:** same + optional `verificationStatus`, `verifiedUntil` (Admin only)  
-**BeneficiaryResponse:** all entity fields
-
-Note: `addressId` must reference an existing Address (FK). Missing address → 404.
+**CreateBeneficiaryRequest (combined payload):** `user`, `city.id` (Guid), `area.name`, `address`, `idPhotoUrl`, `isHeadOfHousehold`  
+**UpdateBeneficiaryRequest:** `addressId` (Guid), `idPhotoUrl`, `isHeadOfHousehold` + optional admin verification fields  
+**BeneficiaryResponse:** system + user profile + location (`addressId`, `cityName`, `street`, `addressDetails`) + beneficiary fields
 
 ## FamilyMembers — `api/FamilyMembers`
 
@@ -73,18 +73,11 @@ Ownership is via `Beneficiary.UserId`.
 
 **VolunteerResponse:** `id`, `userId`, `status`
 
-## Permissions constants
-
-Added under `Donation.Application.Constants.Permissions`:
-
-- `Donors` / `Beneficiaries` / `FamilyMembers` / `Volunteers` — View, Create, Edit, Delete  
-Registered in authorization policies via `AllPermissionsList`.
-
 ## Soft vs hard delete
 
 | Entity | Delete behavior |
 |--------|-----------------|
 | Donor | Soft `IsDeleted = true`, `DeletedAt = UtcNow` |
-| Volunteer | Hard `Remove` |
+| Volunteer | Hard `Remove` (expanded soft-delete may exist on volunteer branch) |
 | Beneficiary | Soft `IsDeleted = true` |
 | FamilyMember | Soft `IsDeleted = true` |

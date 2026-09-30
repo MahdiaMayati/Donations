@@ -6,29 +6,34 @@ using Donation.Application.Features.Beneficiaries.Mappings;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Donation.Application.Features.Beneficiaries.Queries.GetAllBeneficiaries;
+namespace Donation.Application.Features.Beneficiaries.Queries.GetDeletedBeneficiaries;
 
-public sealed class GetAllBeneficiariesQueryHandler : IRequestHandler<GetAllBeneficiariesQuery, IReadOnlyList<BeneficiaryResponse>>
+public sealed class GetDeletedBeneficiariesQueryHandler
+    : IRequestHandler<GetDeletedBeneficiariesQuery, IReadOnlyList<BeneficiaryResponse>>
 {
     private readonly IAppDbContext _context;
     private readonly ICurrentUserService _currentUser;
 
-    public GetAllBeneficiariesQueryHandler(IAppDbContext context, ICurrentUserService currentUser)
+    public GetDeletedBeneficiariesQueryHandler(IAppDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
         _currentUser = currentUser;
     }
 
-    public async Task<IReadOnlyList<BeneficiaryResponse>> Handle(GetAllBeneficiariesQuery request, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<BeneficiaryResponse>> Handle(
+        GetDeletedBeneficiariesQuery request,
+        CancellationToken cancellationToken)
     {
         if (_currentUser.UserId is null)
         {
             throw new ForbiddenException("Authentication is required.");
         }
 
+        // Global query filter hides soft-deleted rows; bypass it for this admin/recovery view.
         var query = _context.Beneficiaries
+            .IgnoreQueryFilters()
             .AsNoTracking()
-            .Where(b => !b.IsDeleted);
+            .Where(b => b.IsDeleted);
 
         if (!_currentUser.IsAdmin)
         {
