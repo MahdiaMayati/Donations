@@ -5,7 +5,7 @@ using MediatR;
 namespace Donation.Application.Features.FamilyMembers.Commands.CreateFamilyMember;
 
 public sealed record CreateFamilyMemberCommand(
-    int BeneficiaryId,
+    Guid BeneficiaryId,
     string FullName,
     DateTime BirthDate,
     Gender Gender,

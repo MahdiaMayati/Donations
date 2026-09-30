@@ -25,15 +25,15 @@ public class AreasController : BaseController
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> GetAll([FromQuery] int? cityId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] Guid? cityId, CancellationToken cancellationToken)
     {
         var areas = await _sender.Send(new GetAllAreasQuery(cityId), cancellationToken);
         return CustomResponse(areas, "Areas retrieved successfully.");
     }
 
-    [HttpGet("{id:int}")]
+    [HttpGet("{id:guid}")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         var area = await _sender.Send(new GetAreaByIdQuery(id), cancellationToken);
         if (area is null)
@@ -70,9 +70,9 @@ public class AreasController : BaseController
         }
     }
 
-    [HttpPut("{id:int}")]
+    [HttpPut("{id:guid}")]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateAreaRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateAreaRequest request, CancellationToken cancellationToken)
     {
         try
         {
@@ -101,9 +101,9 @@ public class AreasController : BaseController
         }
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id:guid}")]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         try
         {

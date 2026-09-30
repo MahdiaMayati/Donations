@@ -8,7 +8,7 @@ namespace Donation.Application.DTOs.Beneficiary.Response;
 public sealed class BeneficiaryResponse
 {
     // --- System-managed ---
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public Guid UserId { get; set; }
     public VerificationStatus VerificationStatus { get; set; }
 
@@ -37,7 +37,7 @@ public sealed class BeneficiaryResponse
     public Guid? OrganizationId { get; set; }
 
     // --- Location (city name only — no city id/object) ---
-    public int AddressId { get; set; }
+    public Guid AddressId { get; set; }
     public string CityName { get; set; } = string.Empty;
     public string Street { get; set; } = string.Empty;
     public string AddressDetails { get; set; } = string.Empty;

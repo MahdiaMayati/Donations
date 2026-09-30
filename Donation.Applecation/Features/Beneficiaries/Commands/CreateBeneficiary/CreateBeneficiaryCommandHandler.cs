@@ -119,7 +119,7 @@ public sealed class CreateBeneficiaryCommandHandler : IRequestHandler<CreateBene
 
     private async Task<Area> ResolveOrCreateAreaAsync(
         CreateBeneficiaryAreaRequest areaRequest,
-        int cityId,
+        Guid cityId,
         CancellationToken cancellationToken)
     {
         var name = areaRequest.Name.Trim();
@@ -146,7 +146,7 @@ public sealed class CreateBeneficiaryCommandHandler : IRequestHandler<CreateBene
 
     private async Task<Address> ResolveOrCreateAddressAsync(
         CreateBeneficiaryAddressRequest addressRequest,
-        int areaId,
+        Guid areaId,
         Guid userId,
         CancellationToken cancellationToken)
     {

@@ -7,6 +7,6 @@ public sealed class DeleteCityCommandValidator : AbstractValidator<DeleteCityCom
     public DeleteCityCommandValidator()
     {
         RuleFor(x => x.Id)
-            .GreaterThan(0).WithMessage("Id must be greater than zero.");
+            .NotEmpty().WithMessage("Id is required.");
     }
 }

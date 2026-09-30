@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Donation.Application.Features.Cities.Commands.UpdateCity;
 
-public sealed record UpdateCityCommand(int Id, string Name, string Code) : IRequest<CityResponse?>;
+public sealed record UpdateCityCommand(Guid Id, string Name, string Code) : IRequest<CityResponse?>;

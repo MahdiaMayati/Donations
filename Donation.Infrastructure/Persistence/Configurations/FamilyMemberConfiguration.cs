@@ -11,6 +11,9 @@ public class FamilyMemberConfiguration : IEntityTypeConfiguration<FamilyMember>
         builder.ToTable("FamilyMembers");
         builder.HasKey(f => f.Id);
 
+        builder.Property(f => f.Id)
+            .HasDefaultValueSql("NEWSEQUENTIALID()");
+
         builder.Property(f => f.FullName)
             .IsRequired()
             .HasMaxLength(200);

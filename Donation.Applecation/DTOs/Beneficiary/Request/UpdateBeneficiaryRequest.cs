@@ -8,7 +8,7 @@ namespace Donation.Application.DTOs.Beneficiary.Request;
 /// </summary>
 public sealed class UpdateBeneficiaryRequest
 {
-    public int AddressId { get; set; }
+    public Guid AddressId { get; set; }
     public string IdPhotoUrl { get; set; } = string.Empty;
     public bool IsHeadOfHousehold { get; set; }
 

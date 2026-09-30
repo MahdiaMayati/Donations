@@ -13,15 +13,18 @@ public sealed class CreateDonorCommandHandler : IRequestHandler<CreateDonorComma
 {
     private readonly IAppDbContext _context;
     private readonly ICurrentUserService _currentUser;
+    private readonly IUserIdentityService _userIdentity;
     private readonly ILogger<CreateDonorCommandHandler> _logger;
 
     public CreateDonorCommandHandler(
         IAppDbContext context,
         ICurrentUserService currentUser,
+        IUserIdentityService userIdentity,
         ILogger<CreateDonorCommandHandler> logger)
     {
         _context = context;
         _currentUser = currentUser;
+        _userIdentity = userIdentity;
         _logger = logger;
     }
 
@@ -42,16 +45,61 @@ public sealed class CreateDonorCommandHandler : IRequestHandler<CreateDonorComma
             throw new ConflictException("A donor profile already exists for this user.");
         }
 
-        var donor = new Donor { UserId = userId };
-        _context.Donors.Add(donor);
-        await _context.SaveChangesAsync(cancellationToken);
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken)
+            ?? throw new NotFoundException("User not found.");
 
-        _logger.LogInformation("Donor created with Id {DonorId}", donor.Id);
+        var areaExists = await _context.Areas
+            .AnyAsync(a => a.Id == request.Address.AreaId, cancellationToken);
 
-        return new DonorResponse
+        if (!areaExists)
         {
-            Id = donor.Id,
-            UserId = donor.UserId
+            throw new NotFoundException("Area not found.");
+        }
+
+        await _userIdentity.EnsureEmailAvailableAsync(request.Email, userId, cancellationToken);
+
+        var (firstName, lastName) = DonorMapping.SplitFullName(request.FullName);
+        user.FirstName = firstName;
+        user.LastName = lastName;
+        user.Email = request.Email.Trim();
+        user.UserName = request.Email.Trim();
+        user.PhoneNumber = request.PhoneNumber.Trim();
+        user.PreferredContactMethod = request.PreferredContactMethod.Trim();
+
+        var address = new Address
+        {
+            AreaId = request.Address.AreaId,
+            UserId = userId,
+            Street = request.Address.Street.Trim(),
+            Details = request.Address.Details.Trim(),
+            Latitude = request.Address.Latitude,
+            Longitude = request.Address.Longitude
         };
+        _context.Addresses.Add(address);
+
+        var donor = new Donor
+        {
+            UserId = userId,
+            IsDeleted = false,
+            DeletedAt = null
+        };
+        _context.Donors.Add(donor);
+
+        await _context.SaveChangesAsync(cancellationToken);
+        await _userIdentity.ChangePasswordAsync(userId, request.Password, cancellationToken);
+
+        user = await _context.Users.AsNoTracking()
+            .FirstAsync(u => u.Id == userId, cancellationToken);
+
+        var addressWithLocation = await _context.Addresses
+            .AsNoTracking()
+            .Include(a => a.Area)
+                .ThenInclude(ar => ar.City)
+            .FirstAsync(a => a.Id == address.Id, cancellationToken);
+
+        _logger.LogInformation("Donor created with Id {DonorId} for User {UserId}", donor.Id, userId);
+
+        return DonorMapping.ToResponse(donor, user, addressWithLocation);
     }
 }

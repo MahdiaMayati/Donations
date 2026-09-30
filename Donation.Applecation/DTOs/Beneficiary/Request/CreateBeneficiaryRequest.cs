@@ -42,7 +42,7 @@ public sealed class CreateBeneficiaryUserRequest
 /// </summary>
 public sealed class CreateBeneficiaryCityRequest
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 }
 
 /// <summary>

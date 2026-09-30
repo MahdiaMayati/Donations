@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Donation.Application.Features.Addresses.Queries.GetAllAddresses;
 
-public sealed record GetAllAddressesQuery(int? AreaId) : IRequest<IReadOnlyList<AddressResponse>>;
+public sealed record GetAllAddressesQuery(Guid? AreaId) : IRequest<IReadOnlyList<AddressResponse>>;

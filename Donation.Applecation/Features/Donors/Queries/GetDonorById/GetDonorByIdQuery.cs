@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Donation.Application.Features.Donors.Queries.GetDonorById;
 
-public sealed record GetDonorByIdQuery(int Id) : IRequest<DonorResponse?>;
+public sealed record GetDonorByIdQuery(Guid Id) : IRequest<DonorResponse?>;

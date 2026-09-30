@@ -8,7 +8,7 @@ namespace Donation.Application.Services;
 /// </summary>
 public sealed class AddressDependencyChecker : IAddressDependencyChecker
 {
-    public Task<(bool HasDependencies, string Message)> CheckAsync(int addressId, CancellationToken cancellationToken)
+    public Task<(bool HasDependencies, string Message)> CheckAsync(Guid addressId, CancellationToken cancellationToken)
     {
         return Task.FromResult((false, string.Empty));
     }

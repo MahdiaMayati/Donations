@@ -5,8 +5,8 @@ using MediatR;
 namespace Donation.Application.Features.FamilyMembers.Commands.UpdateFamilyMember;
 
 public sealed record UpdateFamilyMemberCommand(
-    int Id,
-    int BeneficiaryId,
+    Guid Id,
+    Guid BeneficiaryId,
     string FullName,
     DateTime BirthDate,
     Gender Gender,

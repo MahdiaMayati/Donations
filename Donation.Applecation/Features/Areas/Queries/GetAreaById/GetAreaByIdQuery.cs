@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Donation.Application.Features.Areas.Queries.GetAreaById;
 
-public sealed record GetAreaByIdQuery(int Id) : IRequest<AreaResponse?>;
+public sealed record GetAreaByIdQuery(Guid Id) : IRequest<AreaResponse?>;

@@ -11,6 +11,9 @@ public class VolunteerConfiguration : IEntityTypeConfiguration<Volunteer>
         builder.ToTable("Volunteers");
         builder.HasKey(v => v.Id);
 
+        builder.Property(v => v.Id)
+            .HasDefaultValueSql("NEWSEQUENTIALID()");
+
         builder.Property(v => v.Status)
             .HasConversion<int>()
             .IsRequired();

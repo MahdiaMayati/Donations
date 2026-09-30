@@ -8,8 +8,8 @@ Area and Address follow the same CQRS pattern as City (MediatR commands/queries,
 
 | Field | Notes |
 |--------|--------|
-| `Id` | int PK |
-| `CityId` | FK → Cities |
+| `Id` | Guid PK (`NEWSEQUENTIALID()`) |
+| `CityId` | Guid FK → Cities |
 | `Name` | required, max 200 |
 
 | Method | Route | Auth |
@@ -27,8 +27,8 @@ Area and Address follow the same CQRS pattern as City (MediatR commands/queries,
 
 | Field | Notes |
 |--------|--------|
-| `Id` | int PK |
-| `AreaId` | FK → Areas |
+| `Id` | Guid PK (`NEWSEQUENTIALID()`) |
+| `AreaId` | Guid FK → Areas |
 | `UserId` | owner (from JWT; required for ownership rules) |
 | `Street` / `Details` | required |
 | `Latitude` / `Longitude` | -90..90 / -180..180 |

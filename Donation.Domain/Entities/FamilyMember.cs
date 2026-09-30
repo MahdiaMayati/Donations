@@ -4,8 +4,8 @@ namespace Donation.Domain.Entities;
 
 public class FamilyMember
 {
-    public int Id { get; set; }
-    public int BeneficiaryId { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid BeneficiaryId { get; set; }
     public string FullName { get; set; } = string.Empty;
     public DateTime BirthDate { get; set; }
     public Gender Gender { get; set; }

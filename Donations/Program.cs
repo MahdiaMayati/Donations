@@ -139,6 +139,13 @@ using (var scope = app.Services.CreateScope())
         var roleManager = services.GetRequiredService<RoleManager<Role>>();
         var logger = services.GetRequiredService<ILogger<RbacDbSeeder>>();
         await RbacDbSeeder.SeedAsync(userManager, roleManager, context, logger);
+
+        if (app.Environment.IsDevelopment())
+        {
+            var devLogger = services.GetRequiredService<ILoggerFactory>()
+                .CreateLogger("DevelopmentDataSeeder");
+            await DevelopmentDataSeeder.SeedAsync(userManager, roleManager, context, devLogger);
+        }
     }
     catch (Exception ex)
     {

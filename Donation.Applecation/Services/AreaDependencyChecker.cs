@@ -13,7 +13,7 @@ public sealed class AreaDependencyChecker : IAreaDependencyChecker
         _context = context;
     }
 
-    public async Task<(bool HasDependencies, string Message)> CheckAsync(int areaId, CancellationToken cancellationToken)
+    public async Task<(bool HasDependencies, string Message)> CheckAsync(Guid areaId, CancellationToken cancellationToken)
     {
         var hasAddresses = await _context.Addresses
             .AnyAsync(a => a.AreaId == areaId, cancellationToken);

@@ -11,6 +11,9 @@ public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
         builder.ToTable("Organizations");
         builder.HasKey(o => o.Id);
 
+        builder.Property(o => o.Id)
+            .HasDefaultValueSql("NEWSEQUENTIALID()");
+
         builder.Property(o => o.Name)
             .IsRequired()
             .HasMaxLength(200);

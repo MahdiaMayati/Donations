@@ -27,13 +27,8 @@ public sealed class GetDonorByIdQueryHandler : IRequestHandler<GetDonorByIdQuery
 
         var donor = await _context.Donors
             .AsNoTracking()
-            .Where(d => d.Id == request.Id)
-            .Select(d => new DonorResponse
-            {
-                Id = d.Id,
-                UserId = d.UserId
-            })
-            .FirstOrDefaultAsync(cancellationToken);
+            .Include(d => d.User)
+            .FirstOrDefaultAsync(d => d.Id == request.Id, cancellationToken);
 
         if (donor is null)
         {
@@ -45,6 +40,14 @@ public sealed class GetDonorByIdQueryHandler : IRequestHandler<GetDonorByIdQuery
             throw new ForbiddenException("You can only view your own donor profile.");
         }
 
-        return donor;
+        var address = await _context.Addresses
+            .AsNoTracking()
+            .Include(a => a.Area)
+                .ThenInclude(ar => ar.City)
+            .Where(a => a.UserId == donor.UserId)
+            .OrderByDescending(a => a.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return DonorMapping.ToResponse(donor, donor.User, address);
     }
 }

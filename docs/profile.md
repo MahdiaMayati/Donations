@@ -2,6 +2,8 @@
 
 CQRS endpoints for Donor, Beneficiary, FamilyMember, and Volunteer profiles.
 
+Entity primary keys and location FKs (`City` / `Area` / `Address` / profile entities) use **`Guid`** (routes: `{id:guid}`).
+
 All endpoints require JWT Bearer authentication (`[Authorize]`).
 Ownership: users manage only their own records; Admin/SuperAdmin can manage all.
 Create always assigns `UserId` from the current user (client-supplied UserId is ignored).
@@ -16,81 +18,33 @@ Unified response shape:
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/api/Donors` | Own donors (Admin: all) |
-| GET | `/api/Donors/{id}` | Get by id (owner or Admin) |
-| POST | `/api/Donors` | Create donor for current user (`Status` N/A). Body optional/empty. Duplicate UserId → 409 |
-| PUT | `/api/Donors/{id}` | Idempotent update (no mutable fields); returns current donor |
-| DELETE | `/api/Donors/{id}` | Hard delete |
+| GET | `/api/Donors` | Own donors with profile + address (Admin: all) |
+| GET | `/api/Donors/deleted` | **Admin only** — soft-deleted donors (`IgnoreQueryFilters`) |
+| GET | `/api/Donors/{id}` | Profile: fullName, email, phone, preferredContactMethod, address (with areaName/cityName) |
+| POST | `/api/Donors` | Create donor for current user; updates user profile + creates address. Duplicate → 409 |
+| POST | `/api/Donors/{id}/restore` | **Admin only** — restore soft-deleted donor (`IsDeleted=false`, `DeletedAt=null`) |
+| PUT | `/api/Donors/{id}` | Partial/full update of profile fields and/or address |
+| DELETE | `/api/Donors/{id}` | Soft delete (`IsDeleted=true`, `DeletedAt=UtcNow`); related User/Address untouched |
 
-**DonorResponse:** `id`, `userId`
+**CreateDonorRequest:** `fullName`, `email`, `phoneNumber`, `password`, `preferredContactMethod` (WhatsApp\|Call\|SMS), `address` (`areaId`, `street`, `details`, `latitude`, `longitude`)  
+**UpdateDonorRequest:** same fields optional (omit to leave unchanged)  
+**DonorResponse:** profile fields (no password) + nested `address` (`id`, `areaId`, `areaName`, `cityName`, `street`, `details`, `latitude`, `longitude` — no nested `userId`)
 
 ## Beneficiaries — `api/Beneficiaries`
 
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/api/Beneficiaries` | Own (Admin: all); excludes soft-deleted |
+| GET | `/api/Beneficiaries/deleted` | Soft-deleted beneficiaries |
 | GET | `/api/Beneficiaries/{id}` | Get by id |
-| POST | `/api/Beneficiaries` | Combined registration: update current-user profile + link existing City by id + find/create Area→Address + create Beneficiary (single DB transaction). System sets `userId` (current user), `verificationStatus=Pending`, `verifiedUntil=null`, `createdAt=UtcNow`, `isDeleted=false`. Duplicate UserId → 409 |
+| POST | `/api/Beneficiaries` | Combined registration: update current-user profile + link existing City by Guid + find/create Area→Address + create Beneficiary (single DB transaction). Duplicate UserId → 409 |
+| POST | `/api/Beneficiaries/{id}/restore` | Restore soft-deleted beneficiary |
 | PUT | `/api/Beneficiaries/{id}` | Update address/photo/head-of-household. Admin may also set `verificationStatus`, `verifiedUntil` |
 | DELETE | `/api/Beneficiaries/{id}` | Soft delete (`isDeleted=true`) |
 
-**CreateBeneficiaryRequest (combined payload):**
-
-```json
-{
-  "user": {
-    "firstName": "string",
-    "lastName": "string",
-    "phoneNumber": "string?",
-    "dateOfBirth": "date?",
-    "gender": true,
-    "preferredContactMethod": "WhatsApp|Call|SMS",
-    "maritalStatus": "string",
-    "educationalStatus": "string",
-    "job": "string",
-    "healthStatus": "string"
-  },
-  "city": { "id": 1 },
-  "area": { "name": "string" },
-  "address": {
-    "street": "string",
-    "details": "string",
-    "latitude": 0,
-    "longitude": 0
-  },
-  "idPhotoUrl": "string",
-  "isHeadOfHousehold": true
-}
-```
-
-**Location resolution rules (inside one transaction):**
-
-| Section | Request fields | Behavior |
-|---------|----------------|----------|
-| City | `id` only | Must reference an existing city (`id > 0`); never created here. Missing → 404 |
-| Area | `name` only | Find by name under the resolved city (case-insensitive), otherwise create |
-| Address | `street`, `details`, `latitude`, `longitude` | Find by street+details+area+user, otherwise create (updates coordinates if found) |
-
-Notes:
-- Account `email`/`password` are **not** part of this payload — register via `/api/Auth/register`, then call this endpoint authenticated.
-- `user` fields update the authenticated user's profile (same fields as profile update + optional `phoneNumber`).
-- City is selected by id only (`name`/`code` are not accepted on this endpoint).
-- Area and address are never linked by id on create; they are found or created from the provided input fields.
-
-**UpdateBeneficiaryRequest:** `addressId`, `idPhotoUrl`, `isHeadOfHousehold` + optional `verificationStatus`, `verifiedUntil` (Admin only; ignored for non-admin)  
-
-**BeneficiaryResponse (uniform across GET list, GET by id, POST, PUT):**
-
-| Group | Fields |
-|-------|--------|
-| System | `id`, `userId`, `verificationStatus`, `isVerified` (derived), `verifiedUntil`, `createdAt`, `isDeleted` |
-| User profile | `firstName`, `lastName`, `email`, `phoneNumber`, `dateOfBirth`, `gender`, `preferredContactMethod`, `maritalStatus`, `educationalStatus`, `job`, `healthStatus`, `organizationId` |
-| Location | `addressId`, `cityName` (string only — no city id/object), `street`, `addressDetails` |
-| Beneficiary | `idPhotoUrl`, `isHeadOfHousehold` |
-
-Mapping is centralized in `Features/Beneficiaries/Mappings/BeneficiaryMappings.ToResponseExpression()`.
-
-Note: `addressId` must reference an existing Address (FK). Missing address → 404.
+**CreateBeneficiaryRequest (combined payload):** `user`, `city.id` (Guid), `area.name`, `address`, `idPhotoUrl`, `isHeadOfHousehold`  
+**UpdateBeneficiaryRequest:** `addressId` (Guid), `idPhotoUrl`, `isHeadOfHousehold` + optional admin verification fields  
+**BeneficiaryResponse:** system + user profile + location (`addressId`, `cityName`, `street`, `addressDetails`) + beneficiary fields
 
 ## FamilyMembers — `api/FamilyMembers`
 
@@ -119,18 +73,11 @@ Ownership is via `Beneficiary.UserId`.
 
 **VolunteerResponse:** `id`, `userId`, `status`
 
-## Permissions constants
-
-Added under `Donation.Application.Constants.Permissions`:
-
-- `Donors` / `Beneficiaries` / `FamilyMembers` / `Volunteers` — View, Create, Edit, Delete  
-Registered in authorization policies via `AllPermissionsList`.
-
 ## Soft vs hard delete
 
 | Entity | Delete behavior |
 |--------|-----------------|
-| Donor | Hard `Remove` |
-| Volunteer | Hard `Remove` |
+| Donor | Soft `IsDeleted = true`, `DeletedAt = UtcNow` |
+| Volunteer | Hard `Remove` (expanded soft-delete may exist on volunteer branch) |
 | Beneficiary | Soft `IsDeleted = true` |
 | FamilyMember | Soft `IsDeleted = true` |

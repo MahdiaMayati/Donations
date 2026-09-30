@@ -7,7 +7,7 @@ public sealed class CreateAddressCommandValidator : AbstractValidator<CreateAddr
     public CreateAddressCommandValidator()
     {
         RuleFor(x => x.AreaId)
-            .GreaterThan(0).WithMessage("AreaId must be greater than zero.");
+            .NotEmpty().WithMessage("AreaId is required.");
 
         RuleFor(x => x.Street)
             .Cascade(CascadeMode.Stop)

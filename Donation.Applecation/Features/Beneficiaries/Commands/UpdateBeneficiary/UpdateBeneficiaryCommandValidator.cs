@@ -7,10 +7,10 @@ public sealed class UpdateBeneficiaryCommandValidator : AbstractValidator<Update
     public UpdateBeneficiaryCommandValidator()
     {
         RuleFor(x => x.Id)
-            .GreaterThan(0).WithMessage("Id must be greater than zero.");
+            .NotEmpty().WithMessage("Id is required.");
 
         RuleFor(x => x.AddressId)
-            .GreaterThan(0).WithMessage("AddressId must be greater than zero.");
+            .NotEmpty().WithMessage("AddressId is required.");
 
         RuleFor(x => x.IdPhotoUrl)
             .Cascade(CascadeMode.Stop)

@@ -41,10 +41,12 @@ public sealed class DeleteDonorCommandHandler : IRequestHandler<DeleteDonorComma
 
         EnsureCanManage(donor);
 
-        _context.Donors.Remove(donor);
+        donor.IsDeleted = true;
+        donor.DeletedAt = DateTime.UtcNow;
+
         await _context.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Donor deleted with Id {DonorId}", request.Id);
+        _logger.LogInformation("Donor soft-deleted with Id {DonorId}", request.Id);
 
         return true;
     }

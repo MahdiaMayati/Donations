@@ -7,6 +7,6 @@ public sealed class DeleteAreaCommandValidator : AbstractValidator<DeleteAreaCom
     public DeleteAreaCommandValidator()
     {
         RuleFor(x => x.Id)
-            .GreaterThan(0).WithMessage("Id must be greater than zero.");
+            .NotEmpty().WithMessage("Id is required.");
     }
 }

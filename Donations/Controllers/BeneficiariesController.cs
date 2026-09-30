@@ -54,8 +54,8 @@ public class BeneficiariesController : BaseController
         }
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         try
         {
@@ -115,8 +115,8 @@ public class BeneficiariesController : BaseController
         }
     }
 
-    [HttpPost("{id:int}/restore")]
-    public async Task<IActionResult> Restore(int id, CancellationToken cancellationToken)
+    [HttpPost("{id:guid}/restore")]
+    public async Task<IActionResult> Restore(Guid id, CancellationToken cancellationToken)
     {
         try
         {
@@ -145,8 +145,8 @@ public class BeneficiariesController : BaseController
         }
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateBeneficiaryRequest request, CancellationToken cancellationToken)
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateBeneficiaryRequest request, CancellationToken cancellationToken)
     {
         try
         {
@@ -192,8 +192,8 @@ public class BeneficiariesController : BaseController
         }
     }
 
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         try
         {

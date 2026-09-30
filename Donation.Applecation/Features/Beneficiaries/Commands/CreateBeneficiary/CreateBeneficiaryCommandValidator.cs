@@ -60,7 +60,7 @@ public sealed class CreateBeneficiaryCommandValidator : AbstractValidator<Create
         When(x => x.City is not null, () =>
         {
             RuleFor(x => x.City.Id)
-                .GreaterThan(0).WithMessage("City.Id is required and must be greater than 0.");
+                .NotEmpty().WithMessage("City.Id is required.");
         });
 
         When(x => x.Area is not null, () =>

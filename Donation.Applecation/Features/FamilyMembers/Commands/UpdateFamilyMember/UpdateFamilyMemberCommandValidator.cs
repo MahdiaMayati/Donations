@@ -7,10 +7,10 @@ public sealed class UpdateFamilyMemberCommandValidator : AbstractValidator<Updat
     public UpdateFamilyMemberCommandValidator()
     {
         RuleFor(x => x.Id)
-            .GreaterThan(0).WithMessage("Id must be greater than zero.");
+            .NotEmpty().WithMessage("Id is required.");
 
         RuleFor(x => x.BeneficiaryId)
-            .GreaterThan(0).WithMessage("BeneficiaryId must be greater than zero.");
+            .NotEmpty().WithMessage("BeneficiaryId is required.");
 
         RuleFor(x => x.FullName)
             .Cascade(CascadeMode.Stop)

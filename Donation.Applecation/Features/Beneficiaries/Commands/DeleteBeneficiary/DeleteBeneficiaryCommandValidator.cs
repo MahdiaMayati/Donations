@@ -7,6 +7,6 @@ public sealed class DeleteBeneficiaryCommandValidator : AbstractValidator<Delete
     public DeleteBeneficiaryCommandValidator()
     {
         RuleFor(x => x.Id)
-            .GreaterThan(0).WithMessage("Id must be greater than zero.");
+            .NotEmpty().WithMessage("Id is required.");
     }
 }

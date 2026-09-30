@@ -11,6 +11,9 @@ public class AddressConfiguration : IEntityTypeConfiguration<Address>
         builder.ToTable("Addresses");
         builder.HasKey(a => a.Id);
 
+        builder.Property(a => a.Id)
+            .HasDefaultValueSql("NEWSEQUENTIALID()");
+
         builder.Property(a => a.Street)
             .IsRequired()
             .HasMaxLength(300);
