@@ -40,6 +40,8 @@ public sealed class GetDeletedDonorsQueryHandler : IRequestHandler<GetDeletedDon
 
         var addresses = await _context.Addresses
             .AsNoTracking()
+            .Include(a => a.Area)
+                .ThenInclude(ar => ar.City)
             .Where(a => userIds.Contains(a.UserId))
             .ToListAsync(cancellationToken);
 

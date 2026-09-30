@@ -89,12 +89,17 @@ public sealed class CreateDonorCommandHandler : IRequestHandler<CreateDonorComma
         await _context.SaveChangesAsync(cancellationToken);
         await _userIdentity.ChangePasswordAsync(userId, request.Password, cancellationToken);
 
-        // Refresh user so PasswordHash presence is accurate for masked response.
         user = await _context.Users.AsNoTracking()
             .FirstAsync(u => u.Id == userId, cancellationToken);
 
+        var addressWithLocation = await _context.Addresses
+            .AsNoTracking()
+            .Include(a => a.Area)
+                .ThenInclude(ar => ar.City)
+            .FirstAsync(a => a.Id == address.Id, cancellationToken);
+
         _logger.LogInformation("Donor created with Id {DonorId} for User {UserId}", donor.Id, userId);
 
-        return DonorMapping.ToResponse(donor, user, address);
+        return DonorMapping.ToResponse(donor, user, addressWithLocation);
     }
 }

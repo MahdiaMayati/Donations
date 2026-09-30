@@ -110,11 +110,20 @@ public sealed class UpdateDonorCommandHandler : IRequestHandler<UpdateDonorComma
 
         _logger.LogInformation("Donor updated with Id {DonorId}", donor.Id);
 
-        // Reload password hash state after possible password change
         user = await _context.Users.AsNoTracking()
             .FirstAsync(u => u.Id == donor.UserId, cancellationToken);
 
-        return DonorMapping.ToResponse(donor, user, address);
+        Address? addressWithLocation = null;
+        if (address is not null)
+        {
+            addressWithLocation = await _context.Addresses
+                .AsNoTracking()
+                .Include(a => a.Area)
+                    .ThenInclude(ar => ar.City)
+                .FirstOrDefaultAsync(a => a.Id == address.Id, cancellationToken);
+        }
+
+        return DonorMapping.ToResponse(donor, user, addressWithLocation);
     }
 
     private void EnsureCanManage(Donor donor)

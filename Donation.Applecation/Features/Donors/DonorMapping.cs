@@ -1,4 +1,3 @@
-using Donation.Application.DTOs.Address.Response;
 using Donation.Application.DTOs.Donor.Response;
 using Donation.Domain.Entities;
 
@@ -6,8 +5,6 @@ namespace Donation.Application.Features.Donors;
 
 internal static class DonorMapping
 {
-    public const string HiddenPassword = "********";
-
     public static DonorResponse ToResponse(Donor donor, User user, Address? address) => new()
     {
         Id = donor.Id,
@@ -15,16 +12,16 @@ internal static class DonorMapping
         FullName = $"{user.FirstName} {user.LastName}".Trim(),
         Email = user.Email ?? string.Empty,
         PhoneNumber = user.PhoneNumber,
-        Password = string.IsNullOrEmpty(user.PasswordHash) ? null : HiddenPassword,
         PreferredContactMethod = user.PreferredContactMethod,
         Address = address is null ? null : ToAddressResponse(address)
     };
 
-    public static AddressResponse ToAddressResponse(Address address) => new()
+    public static DonorAddressResponse ToAddressResponse(Address address) => new()
     {
         Id = address.Id,
         AreaId = address.AreaId,
-        UserId = address.UserId,
+        AreaName = address.Area?.Name ?? string.Empty,
+        CityName = address.Area?.City?.Name ?? string.Empty,
         Street = address.Street,
         Details = address.Details,
         Latitude = address.Latitude,

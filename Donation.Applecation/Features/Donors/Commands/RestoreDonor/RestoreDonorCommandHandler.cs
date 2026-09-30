@@ -59,6 +59,8 @@ public sealed class RestoreDonorCommandHandler : IRequestHandler<RestoreDonorCom
 
         var address = await _context.Addresses
             .AsNoTracking()
+            .Include(a => a.Area)
+                .ThenInclude(ar => ar.City)
             .Where(a => a.UserId == donor.UserId)
             .OrderByDescending(a => a.Id)
             .FirstOrDefaultAsync(cancellationToken);

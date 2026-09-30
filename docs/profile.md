@@ -20,7 +20,7 @@ Unified response shape:
 |--------|------|-------------|
 | GET | `/api/Donors` | Own donors with profile + address (Admin: all) |
 | GET | `/api/Donors/deleted` | **Admin only** — soft-deleted donors (`IgnoreQueryFilters`) |
-| GET | `/api/Donors/{id}` | Profile: fullName, email, phone, masked password, preferredContactMethod, address |
+| GET | `/api/Donors/{id}` | Profile: fullName, email, phone, preferredContactMethod, address (with areaName/cityName) |
 | POST | `/api/Donors` | Create donor for current user; updates user profile + creates address. Duplicate → 409 |
 | POST | `/api/Donors/{id}/restore` | **Admin only** — restore soft-deleted donor (`IsDeleted=false`, `DeletedAt=null`) |
 | PUT | `/api/Donors/{id}` | Partial/full update of profile fields and/or address |
@@ -28,7 +28,7 @@ Unified response shape:
 
 **CreateDonorRequest:** `fullName`, `email`, `phoneNumber`, `password`, `preferredContactMethod` (WhatsApp\|Call\|SMS), `address` (`areaId`, `street`, `details`, `latitude`, `longitude`)  
 **UpdateDonorRequest:** same fields optional (omit to leave unchanged)  
-**DonorResponse:** profile fields + `password: "********"` (never real hash) + nested `address`
+**DonorResponse:** profile fields (no password) + nested `address` (`id`, `areaId`, `areaName`, `cityName`, `street`, `details`, `latitude`, `longitude` — no nested `userId`)
 
 ## Beneficiaries — `api/Beneficiaries`
 

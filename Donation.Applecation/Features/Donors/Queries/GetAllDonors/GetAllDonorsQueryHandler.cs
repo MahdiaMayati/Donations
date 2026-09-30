@@ -43,6 +43,8 @@ public sealed class GetAllDonorsQueryHandler : IRequestHandler<GetAllDonorsQuery
 
         var addresses = await _context.Addresses
             .AsNoTracking()
+            .Include(a => a.Area)
+                .ThenInclude(ar => ar.City)
             .Where(a => userIds.Contains(a.UserId))
             .ToListAsync(cancellationToken);
 
