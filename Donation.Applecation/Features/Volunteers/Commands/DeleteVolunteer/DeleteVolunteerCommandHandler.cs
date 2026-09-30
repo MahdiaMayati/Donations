@@ -41,10 +41,12 @@ public sealed class DeleteVolunteerCommandHandler : IRequestHandler<DeleteVolunt
 
         EnsureCanManage(volunteer);
 
-        _context.Volunteers.Remove(volunteer);
+        volunteer.IsDeleted = true;
+        volunteer.DeletedAt = DateTime.UtcNow;
+
         await _context.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Volunteer deleted with Id {VolunteerId}", request.Id);
+        _logger.LogInformation("Volunteer soft-deleted with Id {VolunteerId}", request.Id);
 
         return true;
     }

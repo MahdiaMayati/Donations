@@ -2,8 +2,11 @@ using Donation.Application.Common.Exceptions;
 using Donation.Application.DTOs.Volunteer.Request;
 using Donation.Application.Features.Volunteers.Commands.CreateVolunteer;
 using Donation.Application.Features.Volunteers.Commands.DeleteVolunteer;
+using Donation.Application.Features.Volunteers.Commands.RestoreVolunteer;
 using Donation.Application.Features.Volunteers.Commands.UpdateVolunteer;
 using Donation.Application.Features.Volunteers.Queries.GetAllVolunteers;
+using Donation.Application.Features.Volunteers.Queries.GetDeletedVolunteers;
+using Donation.Application.Features.Volunteers.Queries.GetDeletedVolunteersCount;
 using Donation.Application.Features.Volunteers.Queries.GetVolunteerById;
 using FluentValidation;
 using MediatR;
@@ -38,6 +41,36 @@ public class VolunteersController : BaseController
         }
     }
 
+    [HttpGet("deleted/count")]
+    [Authorize(Roles = "Admin,SuperAdmin")]
+    public async Task<IActionResult> GetDeletedCount(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var count = await _sender.Send(new GetDeletedVolunteersCountQuery(), cancellationToken);
+            return CustomResponse(new { count }, "Soft-deleted volunteers count retrieved successfully.");
+        }
+        catch (ForbiddenException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status403Forbidden);
+        }
+    }
+
+    [HttpGet("deleted")]
+    [Authorize(Roles = "Admin,SuperAdmin")]
+    public async Task<IActionResult> GetDeleted(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var items = await _sender.Send(new GetDeletedVolunteersQuery(), cancellationToken);
+            return CustomResponse(items, "Soft-deleted volunteers retrieved successfully.");
+        }
+        catch (ForbiddenException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status403Forbidden);
+        }
+    }
+
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
@@ -58,12 +91,57 @@ public class VolunteersController : BaseController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateVolunteerRequest? request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create([FromBody] CreateVolunteerRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            var item = await _sender.Send(new CreateVolunteerCommand(), cancellationToken);
+            var item = await _sender.Send(
+                new CreateVolunteerCommand(
+                    request.OrganizationId,
+                    request.Status,
+                    request.Days,
+                    request.HoursCount,
+                    request.Hobbies,
+                    request.Skills,
+                    request.Address),
+                cancellationToken);
+
             return CustomResponse(item, "Volunteer created successfully.", StatusCodes.Status201Created);
+        }
+        catch (ValidationException ex)
+        {
+            return CustomErrorResponse(
+                "Validation failed.",
+                StatusCodes.Status400BadRequest,
+                ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
+        }
+        catch (ConflictException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status409Conflict);
+        }
+        catch (NotFoundException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status404NotFound);
+        }
+        catch (ForbiddenException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status403Forbidden);
+        }
+    }
+
+    [HttpPost("{id:guid}/restore")]
+    [Authorize(Roles = "Admin,SuperAdmin")]
+    public async Task<IActionResult> Restore(Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var item = await _sender.Send(new RestoreVolunteerCommand(id), cancellationToken);
+            if (item is null)
+            {
+                return CustomErrorResponse("Soft-deleted volunteer not found.", StatusCodes.Status404NotFound);
+            }
+
+            return CustomResponse(item, "Volunteer profile restored successfully.");
         }
         catch (ValidationException ex)
         {
@@ -87,7 +165,18 @@ public class VolunteersController : BaseController
     {
         try
         {
-            var item = await _sender.Send(new UpdateVolunteerCommand(id, request.Status), cancellationToken);
+            var item = await _sender.Send(
+                new UpdateVolunteerCommand(
+                    id,
+                    request.OrganizationId,
+                    request.Status,
+                    request.Days,
+                    request.HoursCount,
+                    request.Hobbies,
+                    request.Skills,
+                    request.Address),
+                cancellationToken);
+
             if (item is null)
             {
                 return CustomErrorResponse("Volunteer not found.", StatusCodes.Status404NotFound);
@@ -101,6 +190,10 @@ public class VolunteersController : BaseController
                 "Validation failed.",
                 StatusCodes.Status400BadRequest,
                 ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
+        }
+        catch (NotFoundException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status404NotFound);
         }
         catch (ForbiddenException ex)
         {

@@ -5,39 +5,37 @@ using Donation.Application.DTOs.Volunteer.Response;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Donation.Application.Features.Volunteers.Queries.GetAllVolunteers;
+namespace Donation.Application.Features.Volunteers.Queries.GetDeletedVolunteers;
 
-public sealed class GetAllVolunteersQueryHandler : IRequestHandler<GetAllVolunteersQuery, IReadOnlyList<VolunteerResponse>>
+public sealed class GetDeletedVolunteersQueryHandler
+    : IRequestHandler<GetDeletedVolunteersQuery, IReadOnlyList<VolunteerResponse>>
 {
     private readonly IAppDbContext _context;
     private readonly ICurrentUserService _currentUser;
 
-    public GetAllVolunteersQueryHandler(IAppDbContext context, ICurrentUserService currentUser)
+    public GetDeletedVolunteersQueryHandler(IAppDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
         _currentUser = currentUser;
     }
 
-    public async Task<IReadOnlyList<VolunteerResponse>> Handle(GetAllVolunteersQuery request, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<VolunteerResponse>> Handle(
+        GetDeletedVolunteersQuery request,
+        CancellationToken cancellationToken)
     {
-        if (_currentUser.UserId is null)
+        if (!_currentUser.IsAdmin)
         {
-            throw new ForbiddenException("Authentication is required.");
+            throw new ForbiddenException("Only Admin users can view soft-deleted volunteers.");
         }
 
-        var query = _context.Volunteers
+        var volunteers = await _context.Volunteers
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .Include(v => v.User)
             .Include(v => v.Organization)
-            .AsQueryable();
-
-        if (!_currentUser.IsAdmin)
-        {
-            query = query.Where(v => v.UserId == _currentUser.UserId.Value);
-        }
-
-        var volunteers = await query
-            .OrderByDescending(v => v.Id)
+            .Where(v => v.IsDeleted)
+            .OrderByDescending(v => v.DeletedAt)
+            .ThenByDescending(v => v.Id)
             .ToListAsync(cancellationToken);
 
         var userIds = volunteers.Select(v => v.UserId).Distinct().ToList();

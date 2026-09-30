@@ -154,6 +154,11 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+if (args.Contains("--seed-only", StringComparer.OrdinalIgnoreCase))
+{
+    return;
+}
+
 app.UseSwaggerDocumentation();
 
 app.UseHttpsRedirection();
