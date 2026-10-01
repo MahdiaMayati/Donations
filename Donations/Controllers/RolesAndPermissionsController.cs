@@ -1,15 +1,17 @@
-﻿using Donation.Domain.Entities;
+using Donation.Application.Common.Pagination;
+using Donation.Domain.Entities;
+using Donation.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Donation.Infrastructure.Persistence;
+
 namespace Donation.Api.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [ApiController]
-public class RolesAndPermissionsController : ControllerBase
+public class RolesAndPermissionsController : BaseController
 {
     private readonly RoleManager<Role> _roleManager;
     private readonly UserManager<User> _userManager;
@@ -24,10 +26,13 @@ public class RolesAndPermissionsController : ControllerBase
 
     [HttpGet("roles")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "AdminOnly")]
-    public async Task<IActionResult> GetAllRoles()
+    public async Task<IActionResult> GetAllRoles(
+        [FromQuery] PaginationRequest pagination,
+        CancellationToken cancellationToken)
     {
-        var roles = await _roleManager.Roles
+        var query = _roleManager.Roles
             .Where(r => !r.IsDeleted)
+            .OrderBy(r => r.Name)
             .Select(r => new
             {
                 r.Id,
@@ -38,9 +43,16 @@ public class RolesAndPermissionsController : ControllerBase
                 r.IsDeleted,
                 r.RoleLevel,
                 r.Description
-            })
-            .ToListAsync();
-        return Ok(roles);
+            });
+
+        if (!string.IsNullOrWhiteSpace(pagination.Search))
+        {
+            var term = pagination.Search.Trim();
+            query = query.Where(r => r.Name != null && r.Name.Contains(term));
+        }
+
+        var roles = await query.ToPaginatedListAsync(pagination, cancellationToken);
+        return CustomResponse(roles, "Roles retrieved successfully.");
     }
 
     [HttpPost("roles")]
@@ -119,15 +131,26 @@ public class RolesAndPermissionsController : ControllerBase
 
     // جلب كل الصلاحيات من قاعدة البيانات (Id, Code, Description)
     [HttpGet("permissions")]
-    public async Task<IActionResult> GetAllPermissions([FromServices] AppDbContext context, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllPermissions(
+        [FromQuery] PaginationRequest pagination,
+        [FromServices] AppDbContext context,
+        CancellationToken cancellationToken)
     {
-        var permissions = await context.Permissions
+        var query = context.Permissions
             .AsNoTracking()
             .OrderBy(p => p.Code)
-            .Select(p => new { p.Id, p.Code, p.Description })
-            .ToListAsync(cancellationToken);
+            .Select(p => new { p.Id, p.Code, p.Description });
 
-        return Ok(permissions);
+        if (!string.IsNullOrWhiteSpace(pagination.Search))
+        {
+            var term = pagination.Search.Trim();
+            query = query.Where(p =>
+                p.Code.Contains(term) ||
+                (p.Description != null && p.Description.Contains(term)));
+        }
+
+        var permissions = await query.ToPaginatedListAsync(pagination, cancellationToken);
+        return CustomResponse(permissions, "Permissions retrieved successfully.");
     }
 
     // جلب الصلاحيات الخاصة بدور معين

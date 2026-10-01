@@ -1,4 +1,5 @@
 using Donation.Application.Common.Exceptions;
+using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.Donor.Request;
 using Donation.Application.Features.Donors.Commands.CreateDonor;
 using Donation.Application.Features.Donors.Commands.DeleteDonor;
@@ -15,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Donation.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [Authorize]
 public class DonorsController : BaseController
 {
@@ -27,11 +28,15 @@ public class DonorsController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] PaginationRequest pagination,
+        CancellationToken cancellationToken)
     {
         try
         {
-            var donors = await _sender.Send(new GetAllDonorsQuery(), cancellationToken);
+            var donors = await _sender.Send(
+                new GetAllDonorsQuery(pagination.Page, pagination.Limit, pagination.Search),
+                cancellationToken);
             return CustomResponse(donors, "Donors retrieved successfully.");
         }
         catch (ForbiddenException ex)
@@ -42,11 +47,15 @@ public class DonorsController : BaseController
 
     [HttpGet("deleted")]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> GetDeleted(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetDeleted(
+        [FromQuery] PaginationRequest pagination,
+        CancellationToken cancellationToken)
     {
         try
         {
-            var donors = await _sender.Send(new GetDeletedDonorsQuery(), cancellationToken);
+            var donors = await _sender.Send(
+                new GetDeletedDonorsQuery(pagination.Page, pagination.Limit, pagination.Search),
+                cancellationToken);
             return CustomResponse(donors, "Soft-deleted donors retrieved successfully.");
         }
         catch (ForbiddenException ex)

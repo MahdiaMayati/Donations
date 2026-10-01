@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-27  
 **Status:** Fixed  
-**Endpoint affected:** `GET /api/RolesAndPermissions/roles` (and any `[Authorize]` endpoint)
+**Endpoint affected:** `GET /api/v1/RolesAndPermissions/roles` (and any `[Authorize]` endpoint)
 
 ## Root cause
 
@@ -36,9 +36,9 @@ Mitigation applied:
 ## How to verify in Swagger
 
 1. Restart the API.
-2. `POST /api/auth/login` with an Admin user.
+2. `POST /api/v1/auth/login` with an Admin user.
 3. Authorize with the access token only (Swagger already prefixes `Bearer`).
-4. Call `GET /api/RolesAndPermissions/roles` → expect **200**.
+4. Call `GET /api/v1/RolesAndPermissions/roles` → expect **200**.
 
 ## Follow-up (2026-09-27): `invalid_token` / signature key was not found
 

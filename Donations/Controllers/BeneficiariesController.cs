@@ -1,4 +1,5 @@
 using Donation.Application.Common.Exceptions;
+using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.Beneficiary.Request;
 using Donation.Application.Features.Beneficiaries.Commands.CreateBeneficiary;
 using Donation.Application.Features.Beneficiaries.Commands.DeleteBeneficiary;
@@ -15,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Donation.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [Authorize]
 public class BeneficiariesController : BaseController
 {
@@ -27,11 +28,15 @@ public class BeneficiariesController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] PaginationRequest pagination,
+        CancellationToken cancellationToken)
     {
         try
         {
-            var items = await _sender.Send(new GetAllBeneficiariesQuery(), cancellationToken);
+            var items = await _sender.Send(
+                new GetAllBeneficiariesQuery(pagination.Page, pagination.Limit, pagination.Search),
+                cancellationToken);
             return CustomResponse(items, "Beneficiaries retrieved successfully.");
         }
         catch (ForbiddenException ex)
@@ -41,11 +46,15 @@ public class BeneficiariesController : BaseController
     }
 
     [HttpGet("deleted")]
-    public async Task<IActionResult> GetDeleted(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetDeleted(
+        [FromQuery] PaginationRequest pagination,
+        CancellationToken cancellationToken)
     {
         try
         {
-            var items = await _sender.Send(new GetDeletedBeneficiariesQuery(), cancellationToken);
+            var items = await _sender.Send(
+                new GetDeletedBeneficiariesQuery(pagination.Page, pagination.Limit, pagination.Search),
+                cancellationToken);
             return CustomResponse(items, "Deleted beneficiaries retrieved successfully.");
         }
         catch (ForbiddenException ex)

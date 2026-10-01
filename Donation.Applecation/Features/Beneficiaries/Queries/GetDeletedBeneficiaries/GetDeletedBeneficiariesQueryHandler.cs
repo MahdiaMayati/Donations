@@ -1,6 +1,7 @@
 using Donation.Application.Abstractions.Persistence;
 using Donation.Application.Abstractions.Services;
 using Donation.Application.Common.Exceptions;
+using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.Beneficiary.Response;
 using Donation.Application.Features.Beneficiaries.Mappings;
 using MediatR;
@@ -9,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Donation.Application.Features.Beneficiaries.Queries.GetDeletedBeneficiaries;
 
 public sealed class GetDeletedBeneficiariesQueryHandler
-    : IRequestHandler<GetDeletedBeneficiariesQuery, IReadOnlyList<BeneficiaryResponse>>
+    : IRequestHandler<GetDeletedBeneficiariesQuery, PaginatedResult<BeneficiaryResponse>>
 {
     private readonly IAppDbContext _context;
     private readonly ICurrentUserService _currentUser;
@@ -20,7 +21,7 @@ public sealed class GetDeletedBeneficiariesQueryHandler
         _currentUser = currentUser;
     }
 
-    public async Task<IReadOnlyList<BeneficiaryResponse>> Handle(
+    public async Task<PaginatedResult<BeneficiaryResponse>> Handle(
         GetDeletedBeneficiariesQuery request,
         CancellationToken cancellationToken)
     {
@@ -29,7 +30,6 @@ public sealed class GetDeletedBeneficiariesQueryHandler
             throw new ForbiddenException("Authentication is required.");
         }
 
-        // Global query filter hides soft-deleted rows; bypass it for this admin/recovery view.
         var query = _context.Beneficiaries
             .IgnoreQueryFilters()
             .AsNoTracking()
@@ -40,9 +40,18 @@ public sealed class GetDeletedBeneficiariesQueryHandler
             query = query.Where(b => b.UserId == _currentUser.UserId.Value);
         }
 
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var term = request.Search.Trim().ToLower();
+            query = query.Where(b =>
+                b.User.FirstName.ToLower().Contains(term) ||
+                b.User.LastName.ToLower().Contains(term) ||
+                (b.User.Email != null && b.User.Email.ToLower().Contains(term)));
+        }
+
         return await query
             .OrderByDescending(b => b.Id)
             .Select(BeneficiaryMappings.ToResponseExpression())
-            .ToListAsync(cancellationToken);
+            .ToPaginatedListAsync(request.Page, request.Limit, cancellationToken);
     }
 }

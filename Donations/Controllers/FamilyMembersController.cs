@@ -1,4 +1,5 @@
 using Donation.Application.Common.Exceptions;
+using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.FamilyMember.Request;
 using Donation.Application.Features.FamilyMembers.Commands.CreateFamilyMember;
 using Donation.Application.Features.FamilyMembers.Commands.DeleteFamilyMember;
@@ -13,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Donation.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [Authorize]
 public class FamilyMembersController : BaseController
 {
@@ -25,11 +26,16 @@ public class FamilyMembersController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] Guid? beneficiaryId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] Guid? beneficiaryId,
+        [FromQuery] PaginationRequest pagination,
+        CancellationToken cancellationToken)
     {
         try
         {
-            var items = await _sender.Send(new GetAllFamilyMembersQuery(beneficiaryId), cancellationToken);
+            var items = await _sender.Send(
+                new GetAllFamilyMembersQuery(beneficiaryId, pagination.Page, pagination.Limit, pagination.Search),
+                cancellationToken);
             return CustomResponse(items, "Family members retrieved successfully.");
         }
         catch (ForbiddenException ex)

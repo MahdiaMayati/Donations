@@ -11,7 +11,7 @@ In **Development**, after `RbacDbSeeder`, `DevelopmentDataSeeder` fills sample r
 | Areas | Center + North per city |
 | Addresses | Linked to demo users |
 | Users + AspNetUserRoles | Demo donor / deleted-donor / volunteers / beneficiary (+ Admin from RBAC) |
-| Donors | Active donor + soft-deleted donor (`GET /api/Donors/deleted`) |
+| Donors | Active donor + soft-deleted donor (`GET /api/v1/Donors/deleted`) |
 | Volunteers | Active + Pending |
 | Beneficiaries | Verified head of household |
 | FamilyMembers | 2 active + 1 soft-deleted |

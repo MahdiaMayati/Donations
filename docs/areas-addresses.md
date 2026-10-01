@@ -14,11 +14,11 @@ Area and Address follow the same CQRS pattern as City (MediatR commands/queries,
 
 | Method | Route | Auth |
 |--------|-------|------|
-| GET | `/api/Areas?cityId=` | Anonymous |
-| GET | `/api/Areas/{id}` | Anonymous |
-| POST | `/api/Areas` | Admin / SuperAdmin |
-| PUT | `/api/Areas/{id}` | Admin / SuperAdmin |
-| DELETE | `/api/Areas/{id}` | Admin / SuperAdmin |
+| GET | `/api/v1/Areas?cityId=&page=1&limit=10` | Anonymous (paginated) |
+| GET | `/api/v1/Areas/{id}` | Anonymous |
+| POST | `/api/v1/Areas` | Admin / SuperAdmin |
+| PUT | `/api/v1/Areas/{id}` | Admin / SuperAdmin |
+| DELETE | `/api/v1/Areas/{id}` | Admin / SuperAdmin |
 
 - City must exist (404). Duplicate name per city is case-insensitive (409).
 - Delete blocked if Addresses exist.
@@ -35,11 +35,11 @@ Area and Address follow the same CQRS pattern as City (MediatR commands/queries,
 
 | Method | Route | Auth |
 |--------|-------|------|
-| GET | `/api/Addresses?areaId=` | Authenticated (own; Admin = all) |
-| GET | `/api/Addresses/{id}` | Authenticated (own; Admin = all) |
-| POST | `/api/Addresses` | Authenticated (assigns current user) |
-| PUT | `/api/Addresses/{id}` | Owner or Admin |
-| DELETE | `/api/Addresses/{id}` | Owner or Admin |
+| GET | `/api/v1/Addresses?areaId=&page=1&limit=10` | Authenticated (own; Admin = all; paginated) |
+| GET | `/api/v1/Addresses/{id}` | Authenticated (own; Admin = all) |
+| POST | `/api/v1/Addresses` | Authenticated (assigns current user) |
+| PUT | `/api/v1/Addresses/{id}` | Owner or Admin |
+| DELETE | `/api/v1/Addresses/{id}` | Owner or Admin |
 
 - Area must exist (404). Cross-user management → 403.
 - Delete dependency checker is ready for future donation links.
