@@ -15,7 +15,8 @@ public class VolunteerConfiguration : IEntityTypeConfiguration<Volunteer>
             .HasDefaultValueSql("NEWSEQUENTIALID()");
 
         builder.Property(v => v.Status)
-            .HasConversion<int>()
+            .HasConversion<string>()
+            .HasMaxLength(50)
             .IsRequired();
 
         builder.HasIndex(v => v.UserId).IsUnique();
