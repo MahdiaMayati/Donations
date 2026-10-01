@@ -4,6 +4,7 @@ using Donation.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Donation.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261001105440_AddWarehouseEntity")]
+    partial class AddWarehouseEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -371,31 +374,6 @@ namespace Donation.Infrastructure.Migrations
                     b.HasIndex("PermissionId");
 
                     b.ToTable("RolePermissions");
-                });
-
-            modelBuilder.Entity("Donation.Domain.Entities.StorageLocation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWSEQUENTIALID()");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<Guid>("WarehouseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("WarehouseId");
-
-                    b.HasIndex("WarehouseId", "Code")
-                        .IsUnique();
-
-                    b.ToTable("StorageLocations", (string)null);
                 });
 
             modelBuilder.Entity("Donation.Domain.Entities.User", b =>
@@ -804,17 +782,6 @@ namespace Donation.Infrastructure.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("Donation.Domain.Entities.StorageLocation", b =>
-                {
-                    b.HasOne("Donation.Domain.Entities.Warehouse", "Warehouse")
-                        .WithMany("StorageLocations")
-                        .HasForeignKey("WarehouseId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Warehouse");
-                });
-
             modelBuilder.Entity("Donation.Domain.Entities.User", b =>
                 {
                     b.HasOne("Donation.Domain.Entities.Organization", "Organization")
@@ -944,11 +911,6 @@ namespace Donation.Infrastructure.Migrations
             modelBuilder.Entity("Donation.Domain.Entities.User", b =>
                 {
                     b.Navigation("RefreshTokens");
-                });
-
-            modelBuilder.Entity("Donation.Domain.Entities.Warehouse", b =>
-                {
-                    b.Navigation("StorageLocations");
                 });
 #pragma warning restore 612, 618
         }

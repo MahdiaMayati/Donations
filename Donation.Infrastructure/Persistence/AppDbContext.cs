@@ -24,6 +24,8 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
     public DbSet<Beneficiary> Beneficiaries => Set<Beneficiary>();
     public DbSet<FamilyMember> FamilyMembers => Set<FamilyMember>();
     public DbSet<Volunteer> Volunteers => Set<Volunteer>();
+    public DbSet<Warehouse> Warehouses => Set<Warehouse>();
+    public DbSet<StorageLocation> StorageLocations => Set<StorageLocation>();
 
     public Task<Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction> BeginTransactionAsync(
         CancellationToken cancellationToken = default)
