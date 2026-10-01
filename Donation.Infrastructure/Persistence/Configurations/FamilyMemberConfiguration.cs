@@ -22,8 +22,11 @@ public class FamilyMemberConfiguration : IEntityTypeConfiguration<FamilyMember>
             .IsRequired()
             .HasMaxLength(20);
 
-        builder.Property(f => f.Gender).HasConversion<int>().IsRequired();
-        builder.Property(f => f.ClothingSize).HasConversion<int>().IsRequired();
+        builder.Property(f => f.ClothingSize)
+            .IsRequired()
+            .HasMaxLength(20);
+
+        builder.Property(f => f.Gender).IsRequired();
 
         builder.HasIndex(f => f.BeneficiaryId);
         builder.HasQueryFilter(f => !f.IsDeleted);
