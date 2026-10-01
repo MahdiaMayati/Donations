@@ -12,7 +12,8 @@ public class VolunteerConfiguration : IEntityTypeConfiguration<Volunteer>
         builder.HasKey(v => v.Id);
 
         builder.Property(v => v.Status)
-            .HasConversion<int>()
+            .HasConversion<string>()
+            .HasMaxLength(50)
             .IsRequired();
 
         builder.HasIndex(v => v.UserId).IsUnique();
