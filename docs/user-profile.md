@@ -18,7 +18,7 @@ Extended `User` profile properties with registration validation, a profile updat
 
 ## DTOs
 
-- `RegisterRequest` — profile fields mandatory on register except `DateOfBirth`
+- `RegisterRequest` — uses `fullName` (required); profile fields mandatory except `DateOfBirth`. Mapped into `User.FirstName` / `User.LastName` on save.
 - `UpdateUserRequest` — same profile fields for update
 - `UserResponse` — profile payload returned from update
 

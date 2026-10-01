@@ -59,11 +59,13 @@ public class AuthService : IAuthService
             throw new Exception("البريد الإلكتروني مستخدم مسبقاً.");
         }
 
+        var (firstName, lastName) = SplitFullName(request.FullName);
+
         var user = new User
         {
             UserName = request.Email,
-            FirstName = request.FirstName.Trim(),
-            LastName = request.LastName.Trim(),
+            FirstName = firstName,
+            LastName = lastName,
             Email = request.Email.Trim(),
             IsActive = true,
             OrganizationId = request.OrganizationId,
@@ -104,8 +106,9 @@ public class AuthService : IAuthService
         {
             Token = accessToken,
             RefreshToken = refreshToken, // إرسال الـ RefreshToken للعميل
-            Email = user.Email,
-            FullName = $"{user.FirstName} {user.LastName}"
+            Email = user.Email!,
+            FullName = $"{user.FirstName} {user.LastName}",
+            Roles = roles.ToList()
         };
     }
 
@@ -137,8 +140,9 @@ public class AuthService : IAuthService
         {
             Token = accessToken,
             RefreshToken = refreshToken, // إرسال الـ RefreshToken للعميل
-            Email = user.Email,
-            FullName = $"{user.FirstName} {user.LastName}"
+            Email = user.Email!,
+            FullName = $"{user.FirstName} {user.LastName}",
+            Roles = roles.ToList()
         };
     }
 
@@ -181,8 +185,9 @@ public class AuthService : IAuthService
         {
             Token = newAccessToken,
             RefreshToken = newRefreshToken, // إرسال التوكن الجديد للعميل
-            Email = user.Email,
-            FullName = $"{user.FirstName} {user.LastName}"
+            Email = user.Email!,
+            FullName = $"{user.FirstName} {user.LastName}",
+            Roles = roles.ToList()
         };
     }
 
@@ -208,5 +213,17 @@ public class AuthService : IAuthService
         using var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
         rng.GetBytes(randomNumber);
         return Convert.ToBase64String(randomNumber);
+    }
+
+    private static (string FirstName, string LastName) SplitFullName(string fullName)
+    {
+        var trimmed = fullName.Trim();
+        var parts = trimmed.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1)
+        {
+            return (parts[0], parts[0]);
+        }
+
+        return (parts[0], parts[1]);
     }
 }
