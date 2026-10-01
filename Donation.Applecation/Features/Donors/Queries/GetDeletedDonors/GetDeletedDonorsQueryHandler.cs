@@ -1,13 +1,14 @@
 using Donation.Application.Abstractions.Persistence;
 using Donation.Application.Abstractions.Services;
 using Donation.Application.Common.Exceptions;
+using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.Donor.Response;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Donation.Application.Features.Donors.Queries.GetDeletedDonors;
 
-public sealed class GetDeletedDonorsQueryHandler : IRequestHandler<GetDeletedDonorsQuery, IReadOnlyList<DonorResponse>>
+public sealed class GetDeletedDonorsQueryHandler : IRequestHandler<GetDeletedDonorsQuery, PaginatedResult<DonorResponse>>
 {
     private readonly IAppDbContext _context;
     private readonly ICurrentUserService _currentUser;
@@ -18,7 +19,7 @@ public sealed class GetDeletedDonorsQueryHandler : IRequestHandler<GetDeletedDon
         _currentUser = currentUser;
     }
 
-    public async Task<IReadOnlyList<DonorResponse>> Handle(
+    public async Task<PaginatedResult<DonorResponse>> Handle(
         GetDeletedDonorsQuery request,
         CancellationToken cancellationToken)
     {
@@ -27,13 +28,35 @@ public sealed class GetDeletedDonorsQueryHandler : IRequestHandler<GetDeletedDon
             throw new ForbiddenException("Only Admin users can view soft-deleted donors.");
         }
 
-        var donors = await _context.Donors
+        var query = _context.Donors
             .IgnoreQueryFilters()
             .AsNoTracking()
             .Include(d => d.User)
-            .Where(d => d.IsDeleted)
+            .Where(d => d.IsDeleted);
+
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var term = request.Search.Trim().ToLower();
+            query = query.Where(d =>
+                (d.User.Email != null && d.User.Email.ToLower().Contains(term)) ||
+                d.User.FirstName.ToLower().Contains(term) ||
+                d.User.LastName.ToLower().Contains(term));
+        }
+
+        query = query
             .OrderByDescending(d => d.DeletedAt)
-            .ThenByDescending(d => d.Id)
+            .ThenByDescending(d => d.Id);
+
+        var page = request.Page < 1 ? PaginationRequest.DefaultPage : request.Page;
+        var limit = request.Limit < 1
+            ? PaginationRequest.DefaultLimit
+            : Math.Min(request.Limit, PaginationRequest.MaxLimit);
+
+        var totalItems = await query.CountAsync(cancellationToken);
+
+        var donors = await query
+            .Skip((page - 1) * limit)
+            .Take(limit)
             .ToListAsync(cancellationToken);
 
         var userIds = donors.Select(d => d.UserId).Distinct().ToList();
@@ -49,11 +72,13 @@ public sealed class GetDeletedDonorsQueryHandler : IRequestHandler<GetDeletedDon
             .GroupBy(a => a.UserId)
             .ToDictionary(g => g.Key, g => g.OrderByDescending(a => a.Id).First());
 
-        return donors
+        var items = donors
             .Select(d => DonorMapping.ToResponse(
                 d,
                 d.User,
                 addressByUser.GetValueOrDefault(d.UserId)))
             .ToList();
+
+        return PaginatedResult<DonorResponse>.Create(items, page, limit, totalItems);
     }
 }

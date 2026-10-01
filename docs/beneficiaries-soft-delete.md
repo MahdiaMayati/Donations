@@ -7,8 +7,8 @@
 
 | Method | Route | Purpose |
 |--------|--------|---------|
-| `GET` | `/api/Beneficiaries/deleted` | List soft-deleted beneficiaries (`IsDeleted = true`) |
-| `POST` | `/api/Beneficiaries/{id}/restore` | Restore a soft-deleted beneficiary (`IsDeleted → false`) |
+| `GET` | `/api/v1/Beneficiaries/deleted?page=1&limit=10` | Paginated soft-deleted beneficiaries (`IsDeleted = true`) |
+| `POST` | `/api/v1/Beneficiaries/{id}/restore` | Restore a soft-deleted beneficiary (`IsDeleted → false`) |
 
 Both require authentication. Non-admin users only see/restore their own profile; admins see all.
 

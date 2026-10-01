@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Donation.Api.Controllers;
 
 [ApiController]
-[Route("api/users")]
+[Route("api/v1/users")]
 [Authorize]
 public class UsersController : BaseController
 {

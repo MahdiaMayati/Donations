@@ -1,13 +1,15 @@
 using Donation.Application.Abstractions.Persistence;
 using Donation.Application.Abstractions.Services;
 using Donation.Application.Common.Exceptions;
+using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.FamilyMember.Response;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Donation.Application.Features.FamilyMembers.Queries.GetAllFamilyMembers;
 
-public sealed class GetAllFamilyMembersQueryHandler : IRequestHandler<GetAllFamilyMembersQuery, IReadOnlyList<FamilyMemberResponse>>
+public sealed class GetAllFamilyMembersQueryHandler
+    : IRequestHandler<GetAllFamilyMembersQuery, PaginatedResult<FamilyMemberResponse>>
 {
     private readonly IAppDbContext _context;
     private readonly ICurrentUserService _currentUser;
@@ -18,7 +20,9 @@ public sealed class GetAllFamilyMembersQueryHandler : IRequestHandler<GetAllFami
         _currentUser = currentUser;
     }
 
-    public async Task<IReadOnlyList<FamilyMemberResponse>> Handle(GetAllFamilyMembersQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResult<FamilyMemberResponse>> Handle(
+        GetAllFamilyMembersQuery request,
+        CancellationToken cancellationToken)
     {
         if (_currentUser.UserId is null)
         {
@@ -39,6 +43,12 @@ public sealed class GetAllFamilyMembersQueryHandler : IRequestHandler<GetAllFami
             query = query.Where(m => m.BeneficiaryId == request.BeneficiaryId.Value);
         }
 
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var term = request.Search.Trim().ToLower();
+            query = query.Where(m => m.FullName.ToLower().Contains(term));
+        }
+
         return await query
             .OrderByDescending(m => m.Id)
             .Select(m => new FamilyMemberResponse
@@ -52,6 +62,6 @@ public sealed class GetAllFamilyMembersQueryHandler : IRequestHandler<GetAllFami
                 ShoeSize = m.ShoeSize,
                 IsDeleted = m.IsDeleted
             })
-            .ToListAsync(cancellationToken);
+            .ToPaginatedListAsync(request.Page, request.Limit, cancellationToken);
     }
 }

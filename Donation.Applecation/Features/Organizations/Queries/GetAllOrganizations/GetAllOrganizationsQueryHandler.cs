@@ -1,5 +1,5 @@
 using Donation.Application.Abstractions.Persistence;
-using Donation.Application.DTOs.Common;
+using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.Organization.Response;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Donation.Application.Features.Organizations.Queries.GetAllOrganizations;
 
 public sealed class GetAllOrganizationsQueryHandler
-    : IRequestHandler<GetAllOrganizationsQuery, PagedResult<OrganizationResponse>>
+    : IRequestHandler<GetAllOrganizationsQuery, PaginatedResult<OrganizationResponse>>
 {
     private readonly IAppDbContext _context;
 
@@ -16,7 +16,7 @@ public sealed class GetAllOrganizationsQueryHandler
         _context = context;
     }
 
-    public async Task<PagedResult<OrganizationResponse>> Handle(
+    public async Task<PaginatedResult<OrganizationResponse>> Handle(
         GetAllOrganizationsQuery request,
         CancellationToken cancellationToken)
     {
@@ -24,12 +24,14 @@ public sealed class GetAllOrganizationsQueryHandler
             .AsNoTracking()
             .Where(o => !o.IsDeleted);
 
-        var totalCount = await query.CountAsync(cancellationToken);
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var term = request.Search.Trim().ToLower();
+            query = query.Where(o => o.Name.ToLower().Contains(term));
+        }
 
-        var items = await query
+        return await query
             .OrderBy(o => o.Name)
-            .Skip((request.PageNumber - 1) * request.PageSize)
-            .Take(request.PageSize)
             .Select(o => new OrganizationResponse
             {
                 Id = o.Id,
@@ -38,14 +40,6 @@ public sealed class GetAllOrganizationsQueryHandler
                 CreatedAt = o.CreatedAt,
                 UpdatedAt = o.UpdatedAt
             })
-            .ToListAsync(cancellationToken);
-
-        return new PagedResult<OrganizationResponse>
-        {
-            Items = items,
-            PageNumber = request.PageNumber,
-            PageSize = request.PageSize,
-            TotalCount = totalCount
-        };
+            .ToPaginatedListAsync(request.Page, request.Limit, cancellationToken);
     }
 }
