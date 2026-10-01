@@ -2,6 +2,7 @@ using Donation.Application.Abstractions.Persistence;
 using Donation.Application.Abstractions.Services;
 using Donation.Application.Common.Exceptions;
 using Donation.Application.DTOs.FamilyMember.Response;
+using Donation.Application.Features.FamilyMembers.Common;
 using Donation.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -32,23 +33,16 @@ public sealed class CreateFamilyMemberCommandHandler : IRequestHandler<CreateFam
             throw new ForbiddenException("Authentication is required.");
         }
 
-        var beneficiary = await _context.Beneficiaries
-            .FirstOrDefaultAsync(b => b.Id == request.BeneficiaryId && !b.IsDeleted, cancellationToken);
-
-        if (beneficiary is null)
-        {
-            throw new NotFoundException("Beneficiary not found.");
-        }
-
+        var (beneficiary, user) = await ResolveHeadOfHouseholdAsync(request.HeadOfHouseholdId, cancellationToken);
         EnsureCanManageBeneficiary(beneficiary);
 
         var member = new FamilyMember
         {
-            BeneficiaryId = request.BeneficiaryId,
+            BeneficiaryId = beneficiary.Id,
             FullName = request.FullName.Trim(),
-            BirthDate = request.BirthDate,
+            BirthDate = request.DateOfBirth.Date,
             Gender = request.Gender,
-            ClothingSize = request.ClothingSize,
+            ClothingSize = request.ClothingSize.Trim(),
             ShoeSize = request.ShoeSize.Trim(),
             IsDeleted = false
         };
@@ -58,7 +52,26 @@ public sealed class CreateFamilyMemberCommandHandler : IRequestHandler<CreateFam
 
         _logger.LogInformation("FamilyMember created with Id {FamilyMemberId}", member.Id);
 
-        return Map(member);
+        return FamilyMemberMapper.Map(member, beneficiary, user);
+    }
+
+    private async Task<(Beneficiary Beneficiary, User User)> ResolveHeadOfHouseholdAsync(
+        Guid headOfHouseholdId,
+        CancellationToken cancellationToken)
+    {
+        var beneficiary = await _context.Beneficiaries
+            .Include(b => b.User)
+            .Where(b => b.UserId == headOfHouseholdId && !b.IsDeleted)
+            .OrderByDescending(b => b.IsHeadOfHousehold)
+            .ThenByDescending(b => b.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (beneficiary is null || beneficiary.User is null)
+        {
+            throw new NotFoundException("Head of household (beneficiary) not found for the given HeadOfHouseholdId.");
+        }
+
+        return (beneficiary, beneficiary.User);
     }
 
     private void EnsureCanManageBeneficiary(Beneficiary beneficiary)
@@ -73,16 +86,4 @@ public sealed class CreateFamilyMemberCommandHandler : IRequestHandler<CreateFam
             throw new ForbiddenException("You can only manage family members for your own beneficiary profile.");
         }
     }
-
-    private static FamilyMemberResponse Map(FamilyMember m) => new()
-    {
-        Id = m.Id,
-        BeneficiaryId = m.BeneficiaryId,
-        FullName = m.FullName,
-        BirthDate = m.BirthDate,
-        Gender = m.Gender,
-        ClothingSize = m.ClothingSize,
-        ShoeSize = m.ShoeSize,
-        IsDeleted = m.IsDeleted
-    };
 }

@@ -1,0 +1,39 @@
+using FluentValidation;
+
+namespace Donation.Application.Features.FamilyMembers.Commands.UpdateFamilyMembersBulk;
+
+public sealed class UpdateFamilyMembersBulkCommandValidator : AbstractValidator<UpdateFamilyMembersBulkCommand>
+{
+    public UpdateFamilyMembersBulkCommandValidator()
+    {
+        RuleFor(x => x.Items)
+            .NotEmpty().WithMessage("At least one family member is required.");
+
+        RuleForEach(x => x.Items).ChildRules(item =>
+        {
+            item.RuleFor(x => x.Id)
+                .NotEmpty().WithMessage("Id is required.");
+
+            item.RuleFor(x => x.HeadOfHouseholdId)
+                .NotEmpty().WithMessage("HeadOfHouseholdId is required.");
+
+            item.RuleFor(x => x.FullName)
+                .Cascade(CascadeMode.Stop)
+                .Must(name => !string.IsNullOrWhiteSpace(name)).WithMessage("FullName is required.")
+                .MaximumLength(200).WithMessage("FullName must not exceed 200 characters.");
+
+            item.RuleFor(x => x.DateOfBirth)
+                .LessThan(DateTime.UtcNow.Date.AddDays(1)).WithMessage("DateOfBirth cannot be in the future.");
+
+            item.RuleFor(x => x.ClothingSize)
+                .Cascade(CascadeMode.Stop)
+                .Must(size => !string.IsNullOrWhiteSpace(size)).WithMessage("ClothingSize is required.")
+                .MaximumLength(20).WithMessage("ClothingSize must not exceed 20 characters.");
+
+            item.RuleFor(x => x.ShoeSize)
+                .Cascade(CascadeMode.Stop)
+                .Must(size => !string.IsNullOrWhiteSpace(size)).WithMessage("ShoeSize is required.")
+                .MaximumLength(20).WithMessage("ShoeSize must not exceed 20 characters.");
+        });
+    }
+}

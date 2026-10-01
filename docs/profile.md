@@ -46,20 +46,27 @@ Unified response shape:
 **UpdateBeneficiaryRequest:** `addressId` (Guid), `idPhotoUrl`, `isHeadOfHousehold` + optional admin verification fields  
 **BeneficiaryResponse:** system + user profile + location (`addressId`, `cityName`, `street`, `addressDetails`) + beneficiary fields
 
-## FamilyMembers — `api/FamilyMembers`
+## FamilyMembers — `api/v1/FamilyMembers`
 
-Ownership is via `Beneficiary.UserId`.
+Ownership is via `Beneficiary.UserId` (Head of Household).
+
+`HeadOfHouseholdId` in requests is the **User Guid** of the beneficiary (not the Beneficiary PK). The handler resolves the Beneficiary row (prefers `IsHeadOfHousehold=true`).
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/api/v1/FamilyMembers?beneficiaryId=&page=1&limit=10` | Own family members (Admin: all); optional filter; paginated |
-| GET | `/api/v1/FamilyMembers/{id}` | Get by id |
-| POST | `/api/v1/FamilyMembers` | Create under a beneficiary the caller owns (or Admin) |
-| PUT | `/api/v1/FamilyMembers/{id}` | Update fields including optional `beneficiaryId` reassignment (must own target) |
-| DELETE | `/api/v1/FamilyMembers/{id}` | Soft delete (`isDeleted=true`) |
+| GET | `/api/v1/FamilyMembers?headOfHouseholdId=&ids=&page=1&limit=10` | List (paginated); optional HoH filter and/or batch ids |
+| GET | `/api/v1/FamilyMembers/batch?ids=` | Batch get by ids (paginated) |
+| GET | `/api/v1/FamilyMembers/{id}` | Get single by id (includes full HoH user) |
+| POST | `/api/v1/FamilyMembers` | Create single |
+| POST | `/api/v1/FamilyMembers/batch` | Create collection (body: array) |
+| PUT | `/api/v1/FamilyMembers/{id}` | Update single |
+| PUT | `/api/v1/FamilyMembers/batch` | Update collection (each item requires `id`) |
+| DELETE | `/api/v1/FamilyMembers/{id}` | Soft delete single |
+| DELETE | `/api/v1/FamilyMembers/batch` | Soft delete batch (body: `{ "ids": [...] }`) |
 
-**Create/Update request:** `beneficiaryId`, `fullName`, `birthDate`, `gender`, `clothingSize`, `shoeSize`  
-**FamilyMemberResponse:** all entity fields
+**CreateFamilyMemberRequest:** `headOfHouseholdId` (Guid), `fullName`, `dateOfBirth`, `gender` (bool: true=Male/false=Female), `clothingSize` (string), `shoeSize`  
+**UpdateFamilyMemberRequest:** same + `id` (required for bulk)  
+**FamilyMemberResponse:** `id`, `beneficiaryId`, `headOfHouseholdId`, `userId`, `addressId`, `imageUrl`, `fullName`, `dateOfBirth`, `gender`, `clothingSize`, `shoeSize`, `isDeleted`, `headOfHousehold` (full User fields excluding secrets)
 
 ## Volunteers — `api/Volunteers`
 
