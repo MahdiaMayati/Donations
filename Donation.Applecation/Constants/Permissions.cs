@@ -82,6 +82,22 @@ public static class Permissions
         public const string Delete = "Permissions.Volunteers.Delete";
     }
 
+    public static class ItemCategories
+    {
+        public const string View = "Permissions.ItemCategories.View";
+        public const string Create = "Permissions.ItemCategories.Create";
+        public const string Edit = "Permissions.ItemCategories.Edit";
+        public const string Delete = "Permissions.ItemCategories.Delete";
+    }
+
+    public static class ItemTypes
+    {
+        public const string View = "Permissions.ItemTypes.View";
+        public const string Create = "Permissions.ItemTypes.Create";
+        public const string Edit = "Permissions.ItemTypes.Edit";
+        public const string Delete = "Permissions.ItemTypes.Delete";
+    }
+
     public static List<string> AllPermissionsList =>
         new List<string>
         {
@@ -124,6 +140,14 @@ public static class Permissions
             Volunteers.View,
             Volunteers.Create,
             Volunteers.Edit,
-            Volunteers.Delete
+            Volunteers.Delete,
+            ItemCategories.View,
+            ItemCategories.Create,
+            ItemCategories.Edit,
+            ItemCategories.Delete,
+            ItemTypes.View,
+            ItemTypes.Create,
+            ItemTypes.Edit,
+            ItemTypes.Delete
         };
 }

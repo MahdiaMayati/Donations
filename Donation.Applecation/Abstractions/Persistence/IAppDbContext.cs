@@ -18,6 +18,8 @@ public interface IAppDbContext
     DbSet<Beneficiary> Beneficiaries { get; }
     DbSet<FamilyMember> FamilyMembers { get; }
     DbSet<Volunteer> Volunteers { get; }
+    DbSet<ItemCategory> ItemCategories { get; }
+    DbSet<ItemType> ItemTypes { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
 }
