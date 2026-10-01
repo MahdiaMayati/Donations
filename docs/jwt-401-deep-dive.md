@@ -8,7 +8,7 @@
 Login + JWT generation + TokenValidationParameters are **correct**.
 
 A freshly issued access token accepted by the API returns **HTTP 200** on  
-`GET /api/RolesAndPermissions/roles`.
+`GET /api/v1/RolesAndPermissions/roles`.
 
 The WWW-Authenticate error:
 

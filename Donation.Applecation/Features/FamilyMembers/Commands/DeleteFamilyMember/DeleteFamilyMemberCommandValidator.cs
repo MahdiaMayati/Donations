@@ -7,6 +7,6 @@ public sealed class DeleteFamilyMemberCommandValidator : AbstractValidator<Delet
     public DeleteFamilyMemberCommandValidator()
     {
         RuleFor(x => x.Id)
-            .GreaterThan(0).WithMessage("Id must be greater than zero.");
+            .NotEmpty().WithMessage("Id is required.");
     }
 }

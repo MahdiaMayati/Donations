@@ -1,5 +1,6 @@
 ﻿using Donation.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Donation.Application.Abstractions.Persistence;
 
@@ -18,4 +19,5 @@ public interface IAppDbContext
     DbSet<FamilyMember> FamilyMembers { get; }
     DbSet<Volunteer> Volunteers { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+    Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
 }

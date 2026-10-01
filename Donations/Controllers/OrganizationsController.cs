@@ -1,4 +1,5 @@
 using Donation.Application.Common.Exceptions;
+using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.Organization.Request;
 using Donation.Application.Features.Organizations.Commands.CreateOrganization;
 using Donation.Application.Features.Organizations.Commands.DeleteOrganization;
@@ -13,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Donation.Api.Controllers;
 
 [ApiController]
-[Route("api/organizations")]
+[Route("api/v1/organizations")]
 [Authorize(Roles = "Admin,SuperAdmin")]
 public class OrganizationsController : BaseController
 {
@@ -26,14 +27,13 @@ public class OrganizationsController : BaseController
 
     [HttpGet]
     public async Task<IActionResult> GetAll(
-        [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 10,
+        [FromQuery] PaginationRequest pagination,
         CancellationToken cancellationToken = default)
     {
         try
         {
             var result = await _sender.Send(
-                new GetAllOrganizationsQuery(pageNumber, pageSize),
+                new GetAllOrganizationsQuery(pagination.Page, pagination.Limit, pagination.Search),
                 cancellationToken);
             return CustomResponse(result, "Organizations retrieved successfully.");
         }

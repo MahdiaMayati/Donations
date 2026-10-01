@@ -1,4 +1,5 @@
 using Donation.Application.Common.Exceptions;
+using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.Volunteer.Request;
 using Donation.Application.Features.Volunteers.Commands.CreateVolunteer;
 using Donation.Application.Features.Volunteers.Commands.DeleteVolunteer;
@@ -13,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Donation.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [Authorize]
 public class VolunteersController : BaseController
 {
@@ -25,11 +26,15 @@ public class VolunteersController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] PaginationRequest pagination,
+        CancellationToken cancellationToken)
     {
         try
         {
-            var items = await _sender.Send(new GetAllVolunteersQuery(), cancellationToken);
+            var items = await _sender.Send(
+                new GetAllVolunteersQuery(pagination.Page, pagination.Limit, pagination.Search),
+                cancellationToken);
             return CustomResponse(items, "Volunteers retrieved successfully.");
         }
         catch (ForbiddenException ex)
@@ -38,8 +43,8 @@ public class VolunteersController : BaseController
         }
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         try
         {
@@ -82,8 +87,8 @@ public class VolunteersController : BaseController
         }
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateVolunteerRequest request, CancellationToken cancellationToken)
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateVolunteerRequest request, CancellationToken cancellationToken)
     {
         try
         {
@@ -116,8 +121,8 @@ public class VolunteersController : BaseController
         }
     }
 
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         try
         {

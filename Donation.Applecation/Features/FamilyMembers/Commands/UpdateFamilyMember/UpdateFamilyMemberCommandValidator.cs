@@ -7,24 +7,23 @@ public sealed class UpdateFamilyMemberCommandValidator : AbstractValidator<Updat
     public UpdateFamilyMemberCommandValidator()
     {
         RuleFor(x => x.Id)
-            .GreaterThan(0).WithMessage("Id must be greater than zero.");
+            .NotEmpty().WithMessage("Id is required.");
 
-        RuleFor(x => x.BeneficiaryId)
-            .GreaterThan(0).WithMessage("BeneficiaryId must be greater than zero.");
+        RuleFor(x => x.HeadOfHouseholdId)
+            .NotEmpty().WithMessage("HeadOfHouseholdId is required.");
 
         RuleFor(x => x.FullName)
             .Cascade(CascadeMode.Stop)
             .Must(name => !string.IsNullOrWhiteSpace(name)).WithMessage("FullName is required.")
             .MaximumLength(200).WithMessage("FullName must not exceed 200 characters.");
 
-        RuleFor(x => x.BirthDate)
-            .LessThan(DateTime.UtcNow.Date.AddDays(1)).WithMessage("BirthDate cannot be in the future.");
-
-        RuleFor(x => x.Gender)
-            .IsInEnum().WithMessage("Gender is invalid.");
+        RuleFor(x => x.DateOfBirth)
+            .LessThan(DateTime.UtcNow.Date.AddDays(1)).WithMessage("DateOfBirth cannot be in the future.");
 
         RuleFor(x => x.ClothingSize)
-            .IsInEnum().WithMessage("ClothingSize is invalid.");
+            .Cascade(CascadeMode.Stop)
+            .Must(size => !string.IsNullOrWhiteSpace(size)).WithMessage("ClothingSize is required.")
+            .MaximumLength(20).WithMessage("ClothingSize must not exceed 20 characters.");
 
         RuleFor(x => x.ShoeSize)
             .Cascade(CascadeMode.Stop)

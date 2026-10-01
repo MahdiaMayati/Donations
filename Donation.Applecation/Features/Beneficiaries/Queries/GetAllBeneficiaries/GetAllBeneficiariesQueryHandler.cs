@@ -1,13 +1,16 @@
 using Donation.Application.Abstractions.Persistence;
 using Donation.Application.Abstractions.Services;
 using Donation.Application.Common.Exceptions;
+using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.Beneficiary.Response;
+using Donation.Application.Features.Beneficiaries.Mappings;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Donation.Application.Features.Beneficiaries.Queries.GetAllBeneficiaries;
 
-public sealed class GetAllBeneficiariesQueryHandler : IRequestHandler<GetAllBeneficiariesQuery, IReadOnlyList<BeneficiaryResponse>>
+public sealed class GetAllBeneficiariesQueryHandler
+    : IRequestHandler<GetAllBeneficiariesQuery, PaginatedResult<BeneficiaryResponse>>
 {
     private readonly IAppDbContext _context;
     private readonly ICurrentUserService _currentUser;
@@ -18,7 +21,9 @@ public sealed class GetAllBeneficiariesQueryHandler : IRequestHandler<GetAllBene
         _currentUser = currentUser;
     }
 
-    public async Task<IReadOnlyList<BeneficiaryResponse>> Handle(GetAllBeneficiariesQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedResult<BeneficiaryResponse>> Handle(
+        GetAllBeneficiariesQuery request,
+        CancellationToken cancellationToken)
     {
         if (_currentUser.UserId is null)
         {
@@ -34,20 +39,18 @@ public sealed class GetAllBeneficiariesQueryHandler : IRequestHandler<GetAllBene
             query = query.Where(b => b.UserId == _currentUser.UserId.Value);
         }
 
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var term = request.Search.Trim().ToLower();
+            query = query.Where(b =>
+                b.User.FirstName.ToLower().Contains(term) ||
+                b.User.LastName.ToLower().Contains(term) ||
+                (b.User.Email != null && b.User.Email.ToLower().Contains(term)));
+        }
+
         return await query
             .OrderByDescending(b => b.Id)
-            .Select(b => new BeneficiaryResponse
-            {
-                Id = b.Id,
-                UserId = b.UserId,
-                AddressId = b.AddressId,
-                IdPhotoUrl = b.IdPhotoUrl,
-                IsHeadOfHousehold = b.IsHeadOfHousehold,
-                VerificationStatus = b.VerificationStatus,
-                VerifiedUntil = b.VerifiedUntil,
-                CreatedAt = b.CreatedAt,
-                IsDeleted = b.IsDeleted
-            })
-            .ToListAsync(cancellationToken);
+            .Select(BeneficiaryMappings.ToResponseExpression())
+            .ToPaginatedListAsync(request.Page, request.Limit, cancellationToken);
     }
 }

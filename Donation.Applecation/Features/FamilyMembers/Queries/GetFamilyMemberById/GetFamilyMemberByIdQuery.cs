@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Donation.Application.Features.FamilyMembers.Queries.GetFamilyMemberById;
 
-public sealed record GetFamilyMemberByIdQuery(int Id) : IRequest<FamilyMemberResponse?>;
+public sealed record GetFamilyMemberByIdQuery(Guid Id) : IRequest<FamilyMemberResponse?>;

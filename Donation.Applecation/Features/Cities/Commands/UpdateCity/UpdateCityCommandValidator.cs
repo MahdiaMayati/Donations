@@ -7,7 +7,7 @@ public sealed class UpdateCityCommandValidator : AbstractValidator<UpdateCityCom
     public UpdateCityCommandValidator()
     {
         RuleFor(x => x.Id)
-            .GreaterThan(0).WithMessage("Id must be greater than zero.");
+            .NotEmpty().WithMessage("Id is required.");
 
         RuleFor(x => x.Name)
             .Cascade(CascadeMode.Stop)

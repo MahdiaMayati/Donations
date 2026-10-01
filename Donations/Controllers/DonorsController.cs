@@ -1,9 +1,12 @@
 using Donation.Application.Common.Exceptions;
+using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.Donor.Request;
 using Donation.Application.Features.Donors.Commands.CreateDonor;
 using Donation.Application.Features.Donors.Commands.DeleteDonor;
+using Donation.Application.Features.Donors.Commands.RestoreDonor;
 using Donation.Application.Features.Donors.Commands.UpdateDonor;
 using Donation.Application.Features.Donors.Queries.GetAllDonors;
+using Donation.Application.Features.Donors.Queries.GetDeletedDonors;
 using Donation.Application.Features.Donors.Queries.GetDonorById;
 using FluentValidation;
 using MediatR;
@@ -13,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Donation.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [Authorize]
 public class DonorsController : BaseController
 {
@@ -25,11 +28,15 @@ public class DonorsController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] PaginationRequest pagination,
+        CancellationToken cancellationToken)
     {
         try
         {
-            var donors = await _sender.Send(new GetAllDonorsQuery(), cancellationToken);
+            var donors = await _sender.Send(
+                new GetAllDonorsQuery(pagination.Page, pagination.Limit, pagination.Search),
+                cancellationToken);
             return CustomResponse(donors, "Donors retrieved successfully.");
         }
         catch (ForbiddenException ex)
@@ -38,8 +45,27 @@ public class DonorsController : BaseController
         }
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
+    [HttpGet("deleted")]
+    [Authorize(Roles = "Admin,SuperAdmin")]
+    public async Task<IActionResult> GetDeleted(
+        [FromQuery] PaginationRequest pagination,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var donors = await _sender.Send(
+                new GetDeletedDonorsQuery(pagination.Page, pagination.Limit, pagination.Search),
+                cancellationToken);
+            return CustomResponse(donors, "Soft-deleted donors retrieved successfully.");
+        }
+        catch (ForbiddenException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status403Forbidden);
+        }
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         try
         {
@@ -58,12 +84,60 @@ public class DonorsController : BaseController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateDonorRequest? request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create([FromBody] CreateDonorRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            var donor = await _sender.Send(new CreateDonorCommand(), cancellationToken);
+            var donor = await _sender.Send(
+                new CreateDonorCommand(
+                    request.FullName,
+                    request.Email,
+                    request.PhoneNumber,
+                    request.Password,
+                    request.PreferredContactMethod,
+                    request.Address),
+                cancellationToken);
+
             return CustomResponse(donor, "Donor created successfully.", StatusCodes.Status201Created);
+        }
+        catch (ValidationException ex)
+        {
+            return CustomErrorResponse(
+                "Validation failed.",
+                StatusCodes.Status400BadRequest,
+                ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
+        }
+        catch (ConflictException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status409Conflict);
+        }
+        catch (NotFoundException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status404NotFound);
+        }
+        catch (ForbiddenException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status403Forbidden);
+        }
+        catch (BusinessRuleException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status400BadRequest);
+        }
+    }
+
+    [HttpPost("{id:guid}/restore")]
+    [Authorize(Roles = "Admin,SuperAdmin")]
+    public async Task<IActionResult> Restore(Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var donor = await _sender.Send(new RestoreDonorCommand(id), cancellationToken);
+            if (donor is null)
+            {
+                return CustomErrorResponse("Soft-deleted donor not found.", StatusCodes.Status404NotFound);
+            }
+
+            return CustomResponse(donor, "Donor profile restored successfully.");
         }
         catch (ValidationException ex)
         {
@@ -82,12 +156,22 @@ public class DonorsController : BaseController
         }
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, CancellationToken cancellationToken)
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateDonorRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            var donor = await _sender.Send(new UpdateDonorCommand(id), cancellationToken);
+            var donor = await _sender.Send(
+                new UpdateDonorCommand(
+                    id,
+                    request.FullName,
+                    request.Email,
+                    request.PhoneNumber,
+                    request.Password,
+                    request.PreferredContactMethod,
+                    request.Address),
+                cancellationToken);
+
             if (donor is null)
             {
                 return CustomErrorResponse("Donor not found.", StatusCodes.Status404NotFound);
@@ -102,14 +186,26 @@ public class DonorsController : BaseController
                 StatusCodes.Status400BadRequest,
                 ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage }));
         }
+        catch (ConflictException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status409Conflict);
+        }
+        catch (NotFoundException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status404NotFound);
+        }
         catch (ForbiddenException ex)
         {
             return CustomErrorResponse(ex.Message, StatusCodes.Status403Forbidden);
         }
+        catch (BusinessRuleException ex)
+        {
+            return CustomErrorResponse(ex.Message, StatusCodes.Status400BadRequest);
+        }
     }
 
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         try
         {

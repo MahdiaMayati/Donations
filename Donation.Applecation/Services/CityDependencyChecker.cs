@@ -13,7 +13,7 @@ public sealed class CityDependencyChecker : ICityDependencyChecker
         _context = context;
     }
 
-    public async Task<(bool HasDependencies, string Message)> CheckAsync(int cityId, CancellationToken cancellationToken)
+    public async Task<(bool HasDependencies, string Message)> CheckAsync(Guid cityId, CancellationToken cancellationToken)
     {
         var hasAreas = await _context.Areas
             .AnyAsync(a => a.CityId == cityId, cancellationToken);

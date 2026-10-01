@@ -2,6 +2,7 @@ using Donation.Application.Abstractions.Persistence;
 using Donation.Application.Abstractions.Services;
 using Donation.Application.Common.Exceptions;
 using Donation.Application.DTOs.FamilyMember.Response;
+using Donation.Application.Features.FamilyMembers.Common;
 using Donation.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -43,38 +44,40 @@ public sealed class UpdateFamilyMemberCommandHandler : IRequestHandler<UpdateFam
 
         EnsureCanManageBeneficiary(member.Beneficiary);
 
-        var targetBeneficiary = member.Beneficiary;
-        if (request.BeneficiaryId != member.BeneficiaryId)
-        {
-            targetBeneficiary = await _context.Beneficiaries
-                .FirstOrDefaultAsync(b => b.Id == request.BeneficiaryId && !b.IsDeleted, cancellationToken)
-                ?? throw new NotFoundException("Beneficiary not found.");
+        var (targetBeneficiary, user) = await ResolveHeadOfHouseholdAsync(request.HeadOfHouseholdId, cancellationToken);
+        EnsureCanManageBeneficiary(targetBeneficiary);
 
-            EnsureCanManageBeneficiary(targetBeneficiary);
-        }
-
-        member.BeneficiaryId = request.BeneficiaryId;
+        member.BeneficiaryId = targetBeneficiary.Id;
         member.FullName = request.FullName.Trim();
-        member.BirthDate = request.BirthDate;
+        member.BirthDate = request.DateOfBirth.Date;
         member.Gender = request.Gender;
-        member.ClothingSize = request.ClothingSize;
+        member.ClothingSize = request.ClothingSize.Trim();
         member.ShoeSize = request.ShoeSize.Trim();
 
         await _context.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("FamilyMember updated with Id {FamilyMemberId}", member.Id);
 
-        return new FamilyMemberResponse
+        return FamilyMemberMapper.Map(member, targetBeneficiary, user);
+    }
+
+    private async Task<(Beneficiary Beneficiary, User User)> ResolveHeadOfHouseholdAsync(
+        Guid headOfHouseholdId,
+        CancellationToken cancellationToken)
+    {
+        var beneficiary = await _context.Beneficiaries
+            .Include(b => b.User)
+            .Where(b => b.UserId == headOfHouseholdId && !b.IsDeleted)
+            .OrderByDescending(b => b.IsHeadOfHousehold)
+            .ThenByDescending(b => b.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (beneficiary is null || beneficiary.User is null)
         {
-            Id = member.Id,
-            BeneficiaryId = member.BeneficiaryId,
-            FullName = member.FullName,
-            BirthDate = member.BirthDate,
-            Gender = member.Gender,
-            ClothingSize = member.ClothingSize,
-            ShoeSize = member.ShoeSize,
-            IsDeleted = member.IsDeleted
-        };
+            throw new NotFoundException("Head of household (beneficiary) not found for the given HeadOfHouseholdId.");
+        }
+
+        return (beneficiary, beneficiary.User);
     }
 
     private void EnsureCanManageBeneficiary(Beneficiary beneficiary)

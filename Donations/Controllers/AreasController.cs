@@ -1,4 +1,5 @@
 using Donation.Application.Common.Exceptions;
+using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.Area.Request;
 using Donation.Application.Features.Areas.Commands.CreateArea;
 using Donation.Application.Features.Areas.Commands.DeleteArea;
@@ -13,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Donation.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 public class AreasController : BaseController
 {
     private readonly ISender _sender;
@@ -25,15 +26,20 @@ public class AreasController : BaseController
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> GetAll([FromQuery] int? cityId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] Guid? cityId,
+        [FromQuery] PaginationRequest pagination,
+        CancellationToken cancellationToken)
     {
-        var areas = await _sender.Send(new GetAllAreasQuery(cityId), cancellationToken);
+        var areas = await _sender.Send(
+            new GetAllAreasQuery(cityId, pagination.Page, pagination.Limit, pagination.Search),
+            cancellationToken);
         return CustomResponse(areas, "Areas retrieved successfully.");
     }
 
-    [HttpGet("{id:int}")]
+    [HttpGet("{id:guid}")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         var area = await _sender.Send(new GetAreaByIdQuery(id), cancellationToken);
         if (area is null)
@@ -70,9 +76,9 @@ public class AreasController : BaseController
         }
     }
 
-    [HttpPut("{id:int}")]
+    [HttpPut("{id:guid}")]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateAreaRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateAreaRequest request, CancellationToken cancellationToken)
     {
         try
         {
@@ -101,9 +107,9 @@ public class AreasController : BaseController
         }
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id:guid}")]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         try
         {

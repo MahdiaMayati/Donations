@@ -11,6 +11,9 @@ public class FamilyMemberConfiguration : IEntityTypeConfiguration<FamilyMember>
         builder.ToTable("FamilyMembers");
         builder.HasKey(f => f.Id);
 
+        builder.Property(f => f.Id)
+            .HasDefaultValueSql("NEWSEQUENTIALID()");
+
         builder.Property(f => f.FullName)
             .IsRequired()
             .HasMaxLength(200);
@@ -19,8 +22,11 @@ public class FamilyMemberConfiguration : IEntityTypeConfiguration<FamilyMember>
             .IsRequired()
             .HasMaxLength(20);
 
-        builder.Property(f => f.Gender).HasConversion<int>().IsRequired();
-        builder.Property(f => f.ClothingSize).HasConversion<int>().IsRequired();
+        builder.Property(f => f.ClothingSize)
+            .IsRequired()
+            .HasMaxLength(20);
+
+        builder.Property(f => f.Gender).IsRequired();
 
         builder.HasIndex(f => f.BeneficiaryId);
         builder.HasQueryFilter(f => !f.IsDeleted);

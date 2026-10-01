@@ -8,20 +8,22 @@ City CRUD uses **CQRS** (Commands / Queries / Handlers via MediatR) with authori
 
 | Layer | What |
 |--------|------|
-| Domain | `Donation.Domain/Entities/City.cs` |
+| Domain | `Donation.Domain/Entities/City.cs` — `Guid Id` with `NEWSEQUENTIALID()` default |
 | Application | DTOs, Features (Commands/Queries/Validators), MediatR + FluentValidation pipeline |
-| Infrastructure | `AppDbContext.Cities` + EF migration `AddCityEntity` |
-| API | `Donations/Controllers/CitiesController.cs` |
+| Infrastructure | `CityConfiguration`, EF migration `ConvertEntityIdsToGuid` |
+| API | `Donations/Controllers/CitiesController.cs` (`{id:guid}`) |
 
 ## Endpoints
 
 | Method | Route | Auth | Notes |
 |--------|-------|------|--------|
-| GET | `/api/cities` | Anonymous | Get all (no pagination) |
-| GET | `/api/cities/{id}` | Anonymous | Get by id |
-| POST | `/api/cities` | `Admin` or `SuperAdmin` | Create (`Name`, `Code`) |
-| PUT | `/api/cities/{id}` | `Admin` or `SuperAdmin` | Update |
-| DELETE | `/api/cities/{id}` | `Admin` or `SuperAdmin` | Hard delete if no dependents |
+| GET | `/api/v1/Cities?page=1&limit=10` | Anonymous | Paginated list (optional `search`) |
+| GET | `/api/v1/Cities/{id}` | Anonymous | Get by id |
+| POST | `/api/v1/Cities` | `Admin` or `SuperAdmin` | Create (`Name`, `Code`) |
+| PUT | `/api/v1/Cities/{id}` | `Admin` or `SuperAdmin` | Update |
+| DELETE | `/api/v1/Cities/{id}` | `Admin` or `SuperAdmin` | Hard delete if no dependents |
+
+See [pagination.md](pagination.md) for the shared `PaginatedResult` contract.
 
 ## Security & validation
 

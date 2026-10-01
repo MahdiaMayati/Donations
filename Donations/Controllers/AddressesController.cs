@@ -1,4 +1,5 @@
 using Donation.Application.Common.Exceptions;
+using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.Address.Request;
 using Donation.Application.Features.Addresses.Commands.CreateAddress;
 using Donation.Application.Features.Addresses.Commands.DeleteAddress;
@@ -13,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Donation.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [Authorize]
 public class AddressesController : BaseController
 {
@@ -25,11 +26,16 @@ public class AddressesController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] int? areaId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] Guid? areaId,
+        [FromQuery] PaginationRequest pagination,
+        CancellationToken cancellationToken)
     {
         try
         {
-            var addresses = await _sender.Send(new GetAllAddressesQuery(areaId), cancellationToken);
+            var addresses = await _sender.Send(
+                new GetAllAddressesQuery(areaId, pagination.Page, pagination.Limit, pagination.Search),
+                cancellationToken);
             return CustomResponse(addresses, "Addresses retrieved successfully.");
         }
         catch (ForbiddenException ex)
@@ -38,8 +44,8 @@ public class AddressesController : BaseController
         }
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         try
         {
@@ -90,8 +96,8 @@ public class AddressesController : BaseController
         }
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateAddressRequest request, CancellationToken cancellationToken)
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateAddressRequest request, CancellationToken cancellationToken)
     {
         try
         {
@@ -129,8 +135,8 @@ public class AddressesController : BaseController
         }
     }
 
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         try
         {

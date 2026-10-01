@@ -2,6 +2,7 @@ using Donation.Application.Abstractions.Persistence;
 using Donation.Application.Abstractions.Services;
 using Donation.Application.Common.Exceptions;
 using Donation.Application.DTOs.Beneficiary.Response;
+using Donation.Application.Features.Beneficiaries.Mappings;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,18 +29,7 @@ public sealed class GetBeneficiaryByIdQueryHandler : IRequestHandler<GetBenefici
         var beneficiary = await _context.Beneficiaries
             .AsNoTracking()
             .Where(b => b.Id == request.Id && !b.IsDeleted)
-            .Select(b => new BeneficiaryResponse
-            {
-                Id = b.Id,
-                UserId = b.UserId,
-                AddressId = b.AddressId,
-                IdPhotoUrl = b.IdPhotoUrl,
-                IsHeadOfHousehold = b.IsHeadOfHousehold,
-                VerificationStatus = b.VerificationStatus,
-                VerifiedUntil = b.VerifiedUntil,
-                CreatedAt = b.CreatedAt,
-                IsDeleted = b.IsDeleted
-            })
+            .Select(BeneficiaryMappings.ToResponseExpression())
             .FirstOrDefaultAsync(cancellationToken);
 
         if (beneficiary is null)

@@ -2,8 +2,8 @@ namespace Donation.Domain.Entities;
 
 public class Address
 {
-    public int Id { get; set; }
-    public int AreaId { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid AreaId { get; set; }
     public Guid UserId { get; set; }
     public string Street { get; set; } = string.Empty;
     public string Details { get; set; } = string.Empty;

@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Donation.Application.Features.Areas.Commands.UpdateArea;
 
-public sealed record UpdateAreaCommand(int Id, int CityId, string Name) : IRequest<AreaResponse?>;
+public sealed record UpdateAreaCommand(Guid Id, Guid CityId, string Name) : IRequest<AreaResponse?>;

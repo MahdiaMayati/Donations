@@ -4,7 +4,7 @@ using MediatR;
 namespace Donation.Application.Features.Addresses.Commands.CreateAddress;
 
 public sealed record CreateAddressCommand(
-    int AreaId,
+    Guid AreaId,
     string Street,
     string Details,
     double Latitude,

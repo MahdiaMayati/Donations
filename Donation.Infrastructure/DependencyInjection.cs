@@ -1,5 +1,4 @@
-﻿
-using Donation.Application.Abstractions.Authentication;
+﻿using Donation.Application.Abstractions.Authentication;
 using Donation.Application.Abstractions.Persistence;
 using Donation.Application.Abstractions.Services;
 using Donation.Domain.Entities;
@@ -35,6 +34,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IAboutUsStatisticsService, AboutUsStatisticsService>();
+        services.AddScoped<IUserIdentityService, UserIdentityService>();
         services.AddHttpContextAccessor();
 
         return services;

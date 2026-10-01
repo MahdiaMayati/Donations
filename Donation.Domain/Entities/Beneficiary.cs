@@ -4,9 +4,9 @@ namespace Donation.Domain.Entities;
 
 public class Beneficiary
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public Guid UserId { get; set; }
-    public int AddressId { get; set; }
+    public Guid AddressId { get; set; }
     public string IdPhotoUrl { get; set; } = string.Empty;
     public bool IsHeadOfHousehold { get; set; }
     public VerificationStatus VerificationStatus { get; set; } = VerificationStatus.Pending;

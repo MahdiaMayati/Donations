@@ -1,4 +1,5 @@
 using Donation.Application.Common.Exceptions;
+using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.City.Request;
 using Donation.Application.Features.Cities.Commands.CreateCity;
 using Donation.Application.Features.Cities.Commands.DeleteCity;
@@ -13,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Donation.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 public class CitiesController : BaseController
 {
     private readonly ISender _sender;
@@ -25,15 +26,19 @@ public class CitiesController : BaseController
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] PaginationRequest pagination,
+        CancellationToken cancellationToken)
     {
-        var cities = await _sender.Send(new GetAllCitiesQuery(), cancellationToken);
+        var cities = await _sender.Send(
+            new GetAllCitiesQuery(pagination.Page, pagination.Limit, pagination.Search),
+            cancellationToken);
         return CustomResponse(cities, "Cities retrieved successfully.");
     }
 
-    [HttpGet("{id:int}")]
+    [HttpGet("{id:guid}")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         var city = await _sender.Send(new GetCityByIdQuery(id), cancellationToken);
         if (city is null)
@@ -66,9 +71,9 @@ public class CitiesController : BaseController
         }
     }
 
-    [HttpPut("{id:int}")]
+    [HttpPut("{id:guid}")]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateCityRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCityRequest request, CancellationToken cancellationToken)
     {
         try
         {
@@ -93,9 +98,9 @@ public class CitiesController : BaseController
         }
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id:guid}")]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         try
         {
