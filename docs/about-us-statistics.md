@@ -14,7 +14,6 @@
   "message": "Dynamic platform statistics retrieved successfully.",
   "errors": null,
   "data": {
-    "donatedItemsCount": 0,
     "beneficiariesCount": 3240,
     "donorsCount": 2180,
     "activeVolunteersCount": 450
@@ -28,20 +27,19 @@ Empty tables always yield `0` (never `null`).
 
 | Field | Source |
 |-------|--------|
-| `donorsCount` | `Donors` row count |
-| `beneficiariesCount` | Non-deleted `Beneficiaries` (global soft-delete filter) |
-| `activeVolunteersCount` | `Volunteers` where `Status == Active` |
-| `donatedItemsCount` | **Always `0` until a Donation / donated-items module exists** |
+| `donorsCount` | Non-deleted `Donors` |
+| `beneficiariesCount` | Non-deleted `Beneficiaries` |
+| `activeVolunteersCount` | `Volunteers` where `Status = Active` and not deleted |
 
 ## Caching
 
-- `IMemoryCache` key: `statistics:about-us`
+- `IMemoryCache` key: `statistics:about-us:v2` (new key invalidates old cached payloads that included `donatedItemsCount`)
 - Absolute TTL: **24 hours**
 - On miss (first request or after expiry): reload from DB, then cache again
 
 ## Parallel DB load (cache miss)
 
-Uses `IDbContextFactory<AppDbContext>` so donor / beneficiary / volunteer `CountAsync` queries run concurrently via `Task.WhenAll` (a single `DbContext` is not thread-safe).
+Uses `IDbContextFactory<AppDbContext>` so donor / beneficiary / volunteer counts run concurrently via `Task.WhenAll`.
 
 ## Rate limiting
 

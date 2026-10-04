@@ -19,7 +19,15 @@ public class VolunteerConfiguration : IEntityTypeConfiguration<Volunteer>
             .HasMaxLength(50)
             .IsRequired();
 
-        builder.HasIndex(v => v.UserId).IsUnique();
+        builder.Property(v => v.IsDeleted)
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.HasIndex(v => v.UserId)
+            .IsUnique()
+            .HasFilter("[IsDeleted] = 0");
+
+        builder.HasQueryFilter(v => !v.IsDeleted);
 
         builder.HasOne(v => v.User)
             .WithMany()

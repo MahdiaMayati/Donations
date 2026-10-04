@@ -20,6 +20,10 @@ public interface IAppDbContext
     DbSet<Volunteer> Volunteers { get; }
     DbSet<ItemCategory> ItemCategories { get; }
     DbSet<ItemType> ItemTypes { get; }
+    DbSet<Warehouse> Warehouses { get; }
+    DbSet<StorageLocation> StorageLocations { get; }
+    DbSet<Color> Colors { get; }
+    DbSet<Material> Materials { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
 }

@@ -6,15 +6,10 @@ public sealed class RegisterRequestValidator : AbstractValidator<RegisterRequest
 {
     public RegisterRequestValidator()
     {
-        RuleFor(x => x.FirstName)
+        RuleFor(x => x.FullName)
             .Cascade(CascadeMode.Stop)
-            .Must(v => !string.IsNullOrWhiteSpace(v)).WithMessage("FirstName is required.")
-            .MaximumLength(100);
-
-        RuleFor(x => x.LastName)
-            .Cascade(CascadeMode.Stop)
-            .Must(v => !string.IsNullOrWhiteSpace(v)).WithMessage("LastName is required.")
-            .MaximumLength(100);
+            .Must(v => !string.IsNullOrWhiteSpace(v)).WithMessage("FullName is required.")
+            .MaximumLength(200);
 
         RuleFor(x => x.Email)
             .Cascade(CascadeMode.Stop)
