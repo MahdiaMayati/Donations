@@ -98,6 +98,22 @@ public static class Permissions
         public const string Delete = "Permissions.StorageLocations.Delete";
     }
 
+    public static class Colors
+    {
+        public const string View = "Permissions.Colors.View";
+        public const string Create = "Permissions.Colors.Create";
+        public const string Edit = "Permissions.Colors.Edit";
+        public const string Delete = "Permissions.Colors.Delete";
+    }
+
+    public static class Materials
+    {
+        public const string View = "Permissions.Materials.View";
+        public const string Create = "Permissions.Materials.Create";
+        public const string Edit = "Permissions.Materials.Edit";
+        public const string Delete = "Permissions.Materials.Delete";
+    }
+
     public static List<string> AllPermissionsList =>
         new List<string>
         {
@@ -148,6 +164,14 @@ public static class Permissions
             StorageLocations.View,
             StorageLocations.Create,
             StorageLocations.Edit,
-            StorageLocations.Delete
+            StorageLocations.Delete,
+            Colors.View,
+            Colors.Create,
+            Colors.Edit,
+            Colors.Delete,
+            Materials.View,
+            Materials.Create,
+            Materials.Edit,
+            Materials.Delete
         };
 }
