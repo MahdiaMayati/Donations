@@ -18,6 +18,8 @@ public interface IAppDbContext
     DbSet<Beneficiary> Beneficiaries { get; }
     DbSet<FamilyMember> FamilyMembers { get; }
     DbSet<Volunteer> Volunteers { get; }
+    DbSet<ItemCategory> ItemCategories { get; }
+    DbSet<ItemType> ItemTypes { get; }
     DbSet<Warehouse> Warehouses { get; }
     DbSet<StorageLocation> StorageLocations { get; }
     DbSet<Color> Colors { get; }
