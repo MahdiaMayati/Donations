@@ -24,6 +24,12 @@ public interface IAppDbContext
     DbSet<StorageLocation> StorageLocations { get; }
     DbSet<Color> Colors { get; }
     DbSet<Material> Materials { get; }
+    DbSet<DonationRequest> DonationRequests { get; }
+    DbSet<DonationRequestPhoto> DonationRequestPhotos { get; }
+    DbSet<Item> Items { get; }
+    DbSet<ItemPhoto> ItemPhotos { get; }
+    DbSet<ItemColor> ItemColors { get; }
+    DbSet<ItemStatusHistory> ItemStatusHistories { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
 }

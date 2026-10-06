@@ -11,4 +11,5 @@ public class ItemType : BaseEntity
     public DateTime? DeletedAt { get; set; }
 
     public ItemCategory Category { get; set; } = null!;
+    public ICollection<Item> Items { get; set; } = new List<Item>();
 }

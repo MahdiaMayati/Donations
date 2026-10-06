@@ -30,6 +30,12 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
     public DbSet<StorageLocation> StorageLocations => Set<StorageLocation>();
     public DbSet<Color> Colors => Set<Color>();
     public DbSet<Material> Materials => Set<Material>();
+    public DbSet<DonationRequest> DonationRequests => Set<DonationRequest>();
+    public DbSet<DonationRequestPhoto> DonationRequestPhotos => Set<DonationRequestPhoto>();
+    public DbSet<Item> Items => Set<Item>();
+    public DbSet<ItemPhoto> ItemPhotos => Set<ItemPhoto>();
+    public DbSet<ItemColor> ItemColors => Set<ItemColor>();
+    public DbSet<ItemStatusHistory> ItemStatusHistories => Set<ItemStatusHistory>();
 
     public Task<Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction> BeginTransactionAsync(
         CancellationToken cancellationToken = default)
