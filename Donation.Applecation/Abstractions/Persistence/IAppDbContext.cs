@@ -30,6 +30,7 @@ public interface IAppDbContext
     DbSet<ItemPhoto> ItemPhotos { get; }
     DbSet<ItemColor> ItemColors { get; }
     DbSet<ItemStatusHistory> ItemStatusHistories { get; }
+    DbSet<SystemSetting> SystemSettings { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
 }
