@@ -6,4 +6,6 @@ public class Color
     public string Name { get; set; } = string.Empty;
     public string Code { get; set; } = string.Empty;
     public bool IsDeleted { get; set; }
+
+    public ICollection<ItemColor> ItemColors { get; set; } = new List<ItemColor>();
 }

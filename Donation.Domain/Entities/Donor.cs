@@ -8,4 +8,5 @@ public class Donor
     public DateTime? DeletedAt { get; set; }
 
     public User User { get; set; } = null!;
+    public ICollection<DonationRequest> DonationRequests { get; set; } = new List<DonationRequest>();
 }
