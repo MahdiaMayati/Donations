@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Donation.Api.Controllers;
 
+[ApiExplorerSettings(GroupName = "system")]
 [ApiController]
 [Route("api/v1/system-settings")]
 public sealed class SystemSettingsController : BaseController

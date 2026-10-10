@@ -37,6 +37,7 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
     public DbSet<ItemColor> ItemColors => Set<ItemColor>();
     public DbSet<ItemStatusHistory> ItemStatusHistories => Set<ItemStatusHistory>();
     public DbSet<SystemSetting> SystemSettings => Set<SystemSetting>();
+    public DbSet<TaskType> TaskTypes => Set<TaskType>();
 
     public Task<Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction> BeginTransactionAsync(
         CancellationToken cancellationToken = default)

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace Donation.Api.Controllers;
 
+[ApiExplorerSettings(GroupName = "system")]
 [ApiController]
 [Route("api/v1/statistics")]
 public sealed class StatisticsController : BaseController

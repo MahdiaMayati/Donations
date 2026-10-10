@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Donation.Api.Controllers;
 
+[ApiExplorerSettings(GroupName = "donations")]
 [ApiController]
 [Route("api/v1/items")]
 [Authorize(Roles = "Admin,SuperAdmin")]

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Donation.Api.Controllers;
 
 [Route("api/v1/[controller]")]
+[ApiExplorerSettings(GroupName = "security")]
 [ApiController]
 public class RolesAndPermissionsController : BaseController
 {

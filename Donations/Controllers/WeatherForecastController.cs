@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Donations.Controllers
 {
+    [ApiExplorerSettings(GroupName = "system")]
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase

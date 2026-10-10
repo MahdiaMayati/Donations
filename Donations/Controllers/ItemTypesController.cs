@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Donation.Api.Controllers;
 
+[ApiExplorerSettings(GroupName = "catalog")]
 [ApiController]
 [Route("api/v1/item-types")]
 public sealed class ItemTypesController : BaseController

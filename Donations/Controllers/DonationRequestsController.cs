@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace Donation.Api.Controllers;
 
+[ApiExplorerSettings(GroupName = "donations")]
 [ApiController]
 [Route("api/v1/donation-requests")]
 [Authorize]
