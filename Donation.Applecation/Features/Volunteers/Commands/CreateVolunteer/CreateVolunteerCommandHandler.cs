@@ -83,6 +83,8 @@ public sealed class CreateVolunteerCommandHandler : IRequestHandler<CreateVolunt
             HoursCount = request.HoursCount,
             Hobbies = string.IsNullOrWhiteSpace(request.Hobbies) ? null : request.Hobbies.Trim(),
             Skills = string.IsNullOrWhiteSpace(request.Skills) ? null : request.Skills.Trim(),
+            Experiences = string.IsNullOrWhiteSpace(request.Experiences) ? null : request.Experiences.Trim(),
+            NeglectedTasksCount = request.NeglectedTasksCount,
             IsDeleted = false,
             DeletedAt = null
         };

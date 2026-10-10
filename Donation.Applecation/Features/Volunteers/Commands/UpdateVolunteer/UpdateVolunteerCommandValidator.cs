@@ -35,6 +35,14 @@ public sealed class UpdateVolunteerCommandValidator : AbstractValidator<UpdateVo
             .MaximumLength(500)
             .When(x => x.Skills is not null);
 
+        RuleFor(x => x.Experiences)
+            .MaximumLength(1000)
+            .When(x => x.Experiences is not null);
+
+        RuleFor(x => x.NeglectedTasksCount)
+            .GreaterThanOrEqualTo(0).WithMessage("NeglectedTasksCount must be zero or greater.")
+            .When(x => x.NeglectedTasksCount.HasValue);
+
         When(x => x.Address is not null, () =>
         {
             RuleFor(x => x.Address!.AreaId)

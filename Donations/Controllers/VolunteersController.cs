@@ -103,6 +103,8 @@ public class VolunteersController : BaseController
                     request.HoursCount,
                     request.Hobbies,
                     request.Skills,
+                    request.Experiences,
+                    request.NeglectedTasksCount,
                     request.Address),
                 cancellationToken);
 
@@ -174,6 +176,8 @@ public class VolunteersController : BaseController
                     request.HoursCount,
                     request.Hobbies,
                     request.Skills,
+                    request.Experiences,
+                    request.NeglectedTasksCount,
                     request.Address),
                 cancellationToken);
 

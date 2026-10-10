@@ -32,6 +32,13 @@ public class VolunteerConfiguration : IEntityTypeConfiguration<Volunteer>
         builder.Property(v => v.Skills)
             .HasMaxLength(500);
 
+        builder.Property(v => v.Experiences)
+            .HasMaxLength(1000);
+
+        builder.Property(v => v.NeglectedTasksCount)
+            .IsRequired()
+            .HasDefaultValue(0);
+
         builder.HasIndex(v => v.UserId)
             .IsUnique()
             .HasFilter("[IsDeleted] = 0");

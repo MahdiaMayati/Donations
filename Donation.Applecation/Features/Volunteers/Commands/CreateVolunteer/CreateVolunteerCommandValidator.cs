@@ -28,6 +28,13 @@ public sealed class CreateVolunteerCommandValidator : AbstractValidator<CreateVo
             .MaximumLength(500).WithMessage("Skills must not exceed 500 characters.")
             .When(x => x.Skills is not null);
 
+        RuleFor(x => x.Experiences)
+            .MaximumLength(1000).WithMessage("Experiences must not exceed 1000 characters.")
+            .When(x => x.Experiences is not null);
+
+        RuleFor(x => x.NeglectedTasksCount)
+            .GreaterThanOrEqualTo(0).WithMessage("NeglectedTasksCount must be zero or greater.");
+
         RuleFor(x => x.Address).NotNull().WithMessage("Address is required.");
 
         When(x => x.Address is not null, () =>

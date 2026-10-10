@@ -28,6 +28,8 @@ internal static class VolunteerMapping
         HoursCount = volunteer.HoursCount,
         Hobbies = volunteer.Hobbies,
         Skills = volunteer.Skills,
+        Experiences = volunteer.Experiences,
+        NeglectedTasksCount = volunteer.NeglectedTasksCount,
         FullName = $"{user.FirstName} {user.LastName}".Trim(),
         Email = user.Email ?? string.Empty,
         PhoneNumber = user.PhoneNumber,

@@ -11,4 +11,6 @@ public sealed record CreateVolunteerCommand(
     int HoursCount,
     string? Hobbies,
     string? Skills,
+    string? Experiences,
+    int NeglectedTasksCount,
     VolunteerAddressRequest Address) : IRequest<VolunteerResponse>;

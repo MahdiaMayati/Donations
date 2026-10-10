@@ -8,5 +8,7 @@ public sealed class UpdateVolunteerRequest
     public int? HoursCount { get; set; }
     public string? Hobbies { get; set; }
     public string? Skills { get; set; }
+    public string? Experiences { get; set; }
+    public int? NeglectedTasksCount { get; set; }
     public VolunteerAddressRequest? Address { get; set; }
 }

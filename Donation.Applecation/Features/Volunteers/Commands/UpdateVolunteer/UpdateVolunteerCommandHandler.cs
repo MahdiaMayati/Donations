@@ -80,6 +80,16 @@ public sealed class UpdateVolunteerCommandHandler : IRequestHandler<UpdateVolunt
             volunteer.Skills = string.IsNullOrWhiteSpace(request.Skills) ? null : request.Skills.Trim();
         }
 
+        if (request.Experiences is not null)
+        {
+            volunteer.Experiences = string.IsNullOrWhiteSpace(request.Experiences) ? null : request.Experiences.Trim();
+        }
+
+        if (request.NeglectedTasksCount.HasValue)
+        {
+            volunteer.NeglectedTasksCount = request.NeglectedTasksCount.Value;
+        }
+
         Address? address = await _context.Addresses
             .Where(a => a.UserId == volunteer.UserId)
             .OrderByDescending(a => a.Id)
