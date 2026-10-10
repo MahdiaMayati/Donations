@@ -140,13 +140,24 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var startupLogger = services.GetRequiredService<ILogger<Program>>();
-    var context = services.GetRequiredService<AppDbContext>();
-
-    // Migrations must succeed; swallowing failures leaves the API up with a broken schema (HTTP 500s).
-    await context.Database.MigrateAsync();
 
     try
     {
+        var context = services.GetRequiredService<AppDbContext>();
+
+        // Keep the API process alive even if a migration fails; otherwise the container
+        // crash-loops and the site becomes unreachable (ERR_CONNECTION_RESET).
+        try
+        {
+            await context.Database.MigrateAsync();
+        }
+        catch (Exception migrateEx)
+        {
+            startupLogger.LogCritical(
+                migrateEx,
+                "Database migration failed. API will start anyway; fix schema and redeploy.");
+        }
+
         var userManager = services.GetRequiredService<UserManager<User>>();
         var roleManager = services.GetRequiredService<RoleManager<Role>>();
         var logger = services.GetRequiredService<ILogger<RbacDbSeeder>>();
@@ -161,7 +172,7 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        startupLogger.LogError(ex, "An error occurred during database seeding.");
+        startupLogger.LogError(ex, "An error occurred during database migration/seeding.");
     }
 }
 
