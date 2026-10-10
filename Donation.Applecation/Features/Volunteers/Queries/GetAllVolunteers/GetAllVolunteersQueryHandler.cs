@@ -40,9 +40,27 @@ public sealed class GetAllVolunteersQueryHandler
             query = query.Where(v => v.UserId == _currentUser.UserId.Value);
         }
 
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var term = request.Search.Trim().ToLower();
+            query = query.Where(v =>
+                (v.User.FirstName + " " + v.User.LastName).ToLower().Contains(term)
+                || (v.User.Email != null && v.User.Email.ToLower().Contains(term))
+                || v.Status.ToLower().Contains(term)
+                || (v.Skills != null && v.Skills.ToLower().Contains(term)));
+        }
+
+        var page = request.Page < 1 ? PaginationRequest.DefaultPage : request.Page;
+        var limit = request.Limit < 1
+            ? PaginationRequest.DefaultLimit
+            : Math.Min(request.Limit, PaginationRequest.MaxLimit);
+
+        var totalItems = await query.CountAsync(cancellationToken);
+
         var volunteers = await query
             .OrderByDescending(v => v.Id)
-<<<<<<< HEAD
+            .Skip((page - 1) * limit)
+            .Take(limit)
             .ToListAsync(cancellationToken);
 
         var userIds = volunteers.Select(v => v.UserId).Distinct().ToList();
@@ -58,21 +76,14 @@ public sealed class GetAllVolunteersQueryHandler
             .GroupBy(a => a.UserId)
             .ToDictionary(g => g.Key, g => g.OrderByDescending(a => a.Id).First());
 
-        return volunteers
+        var items = volunteers
             .Select(v => VolunteerMapping.ToResponse(
                 v,
                 v.User,
                 v.Organization,
                 addressByUser.GetValueOrDefault(v.UserId)))
             .ToList();
-=======
-            .Select(v => new VolunteerResponse
-            {
-                Id = v.Id,
-                UserId = v.UserId,
-                Status = v.Status
-            })
-            .ToPaginatedListAsync(request.Page, request.Limit, cancellationToken);
->>>>>>> a211c529ed7431505e5bcb3244d053a964071773
+
+        return PaginatedResult<VolunteerResponse>.Create(items, page, limit, totalItems);
     }
 }
