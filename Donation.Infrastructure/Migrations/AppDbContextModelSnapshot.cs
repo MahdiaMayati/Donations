@@ -1041,7 +1041,6 @@ namespace Donation.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWSEQUENTIALID()");
 
-<<<<<<< HEAD
                     b.Property<string>("Days")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -1060,23 +1059,11 @@ namespace Donation.Infrastructure.Migrations
 
                     b.Property<int>("HoursCount")
                         .HasColumnType("int");
-=======
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
->>>>>>> a211c529ed7431505e5bcb3244d053a964071773
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<int>("NeglectedTasksCount")
                         .ValueGeneratedOnAdd()
