@@ -24,6 +24,24 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
     public DbSet<Beneficiary> Beneficiaries => Set<Beneficiary>();
     public DbSet<FamilyMember> FamilyMembers => Set<FamilyMember>();
     public DbSet<Volunteer> Volunteers => Set<Volunteer>();
+    public DbSet<ItemCategory> ItemCategories => Set<ItemCategory>();
+    public DbSet<ItemType> ItemTypes => Set<ItemType>();
+    public DbSet<Warehouse> Warehouses => Set<Warehouse>();
+    public DbSet<StorageLocation> StorageLocations => Set<StorageLocation>();
+    public DbSet<Color> Colors => Set<Color>();
+    public DbSet<Material> Materials => Set<Material>();
+    public DbSet<DonationRequest> DonationRequests => Set<DonationRequest>();
+    public DbSet<DonationRequestPhoto> DonationRequestPhotos => Set<DonationRequestPhoto>();
+    public DbSet<Item> Items => Set<Item>();
+    public DbSet<ItemPhoto> ItemPhotos => Set<ItemPhoto>();
+    public DbSet<ItemColor> ItemColors => Set<ItemColor>();
+    public DbSet<ItemStatusHistory> ItemStatusHistories => Set<ItemStatusHistory>();
+    public DbSet<SystemSetting> SystemSettings => Set<SystemSetting>();
+    public DbSet<TaskType> TaskTypes => Set<TaskType>();
+
+    public Task<Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction> BeginTransactionAsync(
+        CancellationToken cancellationToken = default)
+        => Database.BeginTransactionAsync(cancellationToken);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

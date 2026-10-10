@@ -18,7 +18,7 @@ Extended `User` profile properties with registration validation, a profile updat
 
 ## DTOs
 
-- `RegisterRequest` — profile fields mandatory on register except `DateOfBirth`
+- `RegisterRequest` — uses `fullName` (required); profile fields mandatory except `DateOfBirth`. Mapped into `User.FirstName` / `User.LastName` on save.
 - `UpdateUserRequest` — same profile fields for update
 - `UserResponse` — profile payload returned from update
 
@@ -26,8 +26,8 @@ Extended `User` profile properties with registration validation, a profile updat
 
 | Method | Route | Auth | Notes |
 |--------|-------|------|--------|
-| POST | `/api/auth/register` | Anonymous | Requires profile fields + `OrganizationId` |
-| PUT | `/api/users/me` | Authenticated | Updates the current user's profile |
+| POST | `/api/v1/auth/register` | Anonymous | Requires profile fields + `OrganizationId` |
+| PUT | `/api/v1/users/me` | Authenticated | Updates the current user's profile |
 
 ## Configuration
 

@@ -22,7 +22,7 @@
 
 ## API
 
-`GET /api/RolesAndPermissions/permissions` returns `{ id, code, description }` from the database.
+`GET /api/v1/RolesAndPermissions/permissions?page=1&limit=10` returns a paginated list of `{ id, code, description }` from the database (see [pagination.md](pagination.md)).
 
 ## Migration
 

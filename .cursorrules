@@ -33,7 +33,8 @@
   3. **Communication Preferences:** Select preferred communication channel (WhatsApp, Call, SMS) $\rightarrow$ Submit Request.
   4. **Post-Submission Options:** Ability to edit the donation request, view the donation log/history, and track status.
 - **Donation Status Lifecycle:**
-  - `Submitted` $\rightarrow$ `Reviewed` $\rightarrow$ `Accepted` $\rightarrow$ `Scheduled` $\rightarrow$ `Received` $\rightarrow$ `Completed`.
+  - `Submitted` $\rightarrow$ `Scheduled` $\rightarrow$ `AssignedToVolunteer` $\rightarrow$ `Received` $\rightarrow$ `Sorting` $\rightarrow$ `Sorted`.
+  - SelfDropOff may skip `Scheduled` / `AssignedToVolunteer` and go `Submitted` $\rightarrow$ `Received` $\rightarrow$ `Sorting` $\rightarrow$ `Sorted`.
 
 ## 6. Request State Management
 - States across the system must be explicitly managed using enums reflecting the exact lifecycle stages.

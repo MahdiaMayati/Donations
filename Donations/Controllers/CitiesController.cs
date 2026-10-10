@@ -1,4 +1,5 @@
 using Donation.Application.Common.Exceptions;
+using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.City.Request;
 using Donation.Application.Features.Cities.Commands.CreateCity;
 using Donation.Application.Features.Cities.Commands.DeleteCity;
@@ -12,8 +13,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Donation.Api.Controllers;
 
+[ApiExplorerSettings(GroupName = "locations")]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 public class CitiesController : BaseController
 {
     private readonly ISender _sender;
@@ -25,9 +27,13 @@ public class CitiesController : BaseController
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] PaginationRequest pagination,
+        CancellationToken cancellationToken)
     {
-        var cities = await _sender.Send(new GetAllCitiesQuery(), cancellationToken);
+        var cities = await _sender.Send(
+            new GetAllCitiesQuery(pagination.Page, pagination.Limit, pagination.Search),
+            cancellationToken);
         return CustomResponse(cities, "Cities retrieved successfully.");
     }
 

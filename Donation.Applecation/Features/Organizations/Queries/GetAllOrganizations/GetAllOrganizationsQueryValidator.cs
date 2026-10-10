@@ -1,4 +1,5 @@
 using FluentValidation;
+using Donation.Application.Common.Pagination;
 
 namespace Donation.Application.Features.Organizations.Queries.GetAllOrganizations;
 
@@ -6,10 +7,11 @@ public sealed class GetAllOrganizationsQueryValidator : AbstractValidator<GetAll
 {
     public GetAllOrganizationsQueryValidator()
     {
-        RuleFor(x => x.PageNumber)
-            .GreaterThanOrEqualTo(1).WithMessage("PageNumber must be at least 1.");
+        RuleFor(x => x.Page)
+            .GreaterThanOrEqualTo(1).WithMessage("page must be at least 1.");
 
-        RuleFor(x => x.PageSize)
-            .InclusiveBetween(1, 100).WithMessage("PageSize must be between 1 and 100.");
+        RuleFor(x => x.Limit)
+            .InclusiveBetween(1, PaginationRequest.MaxLimit)
+            .WithMessage($"limit must be between 1 and {PaginationRequest.MaxLimit}.");
     }
 }

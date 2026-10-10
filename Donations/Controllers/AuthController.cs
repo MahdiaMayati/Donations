@@ -1,4 +1,4 @@
-﻿using Donation.Application.Abstractions.Services;
+using Donation.Application.Abstractions.Services;
 using Donation.Application.DTOs.Auth.Request;
 using Donation.Application.DTOs.Auth.Response;
 using FluentValidation;
@@ -8,8 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Donation.Api.Controllers;
 
 [AllowAnonymous]
+[ApiExplorerSettings(GroupName = "security")]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;

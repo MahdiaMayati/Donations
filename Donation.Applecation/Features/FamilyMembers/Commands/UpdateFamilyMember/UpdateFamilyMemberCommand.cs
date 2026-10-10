@@ -1,14 +1,13 @@
 using Donation.Application.DTOs.FamilyMember.Response;
-using Donation.Domain.Enums;
 using MediatR;
 
 namespace Donation.Application.Features.FamilyMembers.Commands.UpdateFamilyMember;
 
 public sealed record UpdateFamilyMemberCommand(
     Guid Id,
-    Guid BeneficiaryId,
+    Guid HeadOfHouseholdId,
     string FullName,
-    DateTime BirthDate,
-    Gender Gender,
-    ClothingSize ClothingSize,
+    DateTime DateOfBirth,
+    bool Gender,
+    string ClothingSize,
     string ShoeSize) : IRequest<FamilyMemberResponse?>;

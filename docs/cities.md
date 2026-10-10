@@ -17,11 +17,13 @@ City CRUD uses **CQRS** (Commands / Queries / Handlers via MediatR) with authori
 
 | Method | Route | Auth | Notes |
 |--------|-------|------|--------|
-| GET | `/api/cities` | Anonymous | Get all (no pagination) |
-| GET | `/api/cities/{id}` | Anonymous | Get by id |
-| POST | `/api/cities` | `Admin` or `SuperAdmin` | Create (`Name`, `Code`) |
-| PUT | `/api/cities/{id}` | `Admin` or `SuperAdmin` | Update |
-| DELETE | `/api/cities/{id}` | `Admin` or `SuperAdmin` | Hard delete if no dependents |
+| GET | `/api/v1/Cities?page=1&limit=10` | Anonymous | Paginated list (optional `search`) |
+| GET | `/api/v1/Cities/{id}` | Anonymous | Get by id |
+| POST | `/api/v1/Cities` | `Admin` or `SuperAdmin` | Create (`Name`, `Code`) |
+| PUT | `/api/v1/Cities/{id}` | `Admin` or `SuperAdmin` | Update |
+| DELETE | `/api/v1/Cities/{id}` | `Admin` or `SuperAdmin` | Hard delete if no dependents |
+
+See [pagination.md](pagination.md) for the shared `PaginatedResult` contract.
 
 ## Security & validation
 

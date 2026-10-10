@@ -82,6 +82,54 @@ public static class Permissions
         public const string Delete = "Permissions.Volunteers.Delete";
     }
 
+    public static class ItemCategories
+    {
+        public const string View = "Permissions.ItemCategories.View";
+        public const string Create = "Permissions.ItemCategories.Create";
+        public const string Edit = "Permissions.ItemCategories.Edit";
+        public const string Delete = "Permissions.ItemCategories.Delete";
+    }
+
+    public static class ItemTypes
+    {
+        public const string View = "Permissions.ItemTypes.View";
+        public const string Create = "Permissions.ItemTypes.Create";
+        public const string Edit = "Permissions.ItemTypes.Edit";
+        public const string Delete = "Permissions.ItemTypes.Delete";
+    }
+
+    public static class Warehouses
+    {
+        public const string View = "Permissions.Warehouses.View";
+        public const string Create = "Permissions.Warehouses.Create";
+        public const string Edit = "Permissions.Warehouses.Edit";
+        public const string Delete = "Permissions.Warehouses.Delete";
+    }
+
+    public static class StorageLocations
+    {
+        public const string View = "Permissions.StorageLocations.View";
+        public const string Create = "Permissions.StorageLocations.Create";
+        public const string Edit = "Permissions.StorageLocations.Edit";
+        public const string Delete = "Permissions.StorageLocations.Delete";
+    }
+
+    public static class Colors
+    {
+        public const string View = "Permissions.Colors.View";
+        public const string Create = "Permissions.Colors.Create";
+        public const string Edit = "Permissions.Colors.Edit";
+        public const string Delete = "Permissions.Colors.Delete";
+    }
+
+    public static class Materials
+    {
+        public const string View = "Permissions.Materials.View";
+        public const string Create = "Permissions.Materials.Create";
+        public const string Edit = "Permissions.Materials.Edit";
+        public const string Delete = "Permissions.Materials.Delete";
+    }
+
     public static List<string> AllPermissionsList =>
         new List<string>
         {
@@ -124,6 +172,30 @@ public static class Permissions
             Volunteers.View,
             Volunteers.Create,
             Volunteers.Edit,
-            Volunteers.Delete
+            Volunteers.Delete,
+            ItemCategories.View,
+            ItemCategories.Create,
+            ItemCategories.Edit,
+            ItemCategories.Delete,
+            ItemTypes.View,
+            ItemTypes.Create,
+            ItemTypes.Edit,
+            ItemTypes.Delete,
+            Warehouses.View,
+            Warehouses.Create,
+            Warehouses.Edit,
+            Warehouses.Delete,
+            StorageLocations.View,
+            StorageLocations.Create,
+            StorageLocations.Edit,
+            StorageLocations.Delete,
+            Colors.View,
+            Colors.Create,
+            Colors.Edit,
+            Colors.Delete,
+            Materials.View,
+            Materials.Create,
+            Materials.Edit,
+            Materials.Delete
         };
 }

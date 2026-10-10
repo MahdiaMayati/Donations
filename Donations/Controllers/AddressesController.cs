@@ -1,4 +1,5 @@
 using Donation.Application.Common.Exceptions;
+using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.Address.Request;
 using Donation.Application.Features.Addresses.Commands.CreateAddress;
 using Donation.Application.Features.Addresses.Commands.DeleteAddress;
@@ -12,8 +13,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Donation.Api.Controllers;
 
+[ApiExplorerSettings(GroupName = "locations")]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [Authorize]
 public class AddressesController : BaseController
 {
@@ -25,11 +27,16 @@ public class AddressesController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] Guid? areaId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] Guid? areaId,
+        [FromQuery] PaginationRequest pagination,
+        CancellationToken cancellationToken)
     {
         try
         {
-            var addresses = await _sender.Send(new GetAllAddressesQuery(areaId), cancellationToken);
+            var addresses = await _sender.Send(
+                new GetAllAddressesQuery(areaId, pagination.Page, pagination.Limit, pagination.Search),
+                cancellationToken);
             return CustomResponse(addresses, "Addresses retrieved successfully.");
         }
         catch (ForbiddenException ex)

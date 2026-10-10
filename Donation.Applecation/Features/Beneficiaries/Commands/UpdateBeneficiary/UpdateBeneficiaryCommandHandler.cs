@@ -2,6 +2,7 @@ using Donation.Application.Abstractions.Persistence;
 using Donation.Application.Abstractions.Services;
 using Donation.Application.Common.Exceptions;
 using Donation.Application.DTOs.Beneficiary.Response;
+using Donation.Application.Features.Beneficiaries.Mappings;
 using Donation.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -54,6 +55,7 @@ public sealed class UpdateBeneficiaryCommandHandler : IRequestHandler<UpdateBene
         beneficiary.IdPhotoUrl = request.IdPhotoUrl.Trim();
         beneficiary.IsHeadOfHousehold = request.IsHeadOfHousehold;
 
+        // Verification is system/admin-managed — never applied for regular users.
         if (_currentUser.IsAdmin)
         {
             if (request.VerificationStatus.HasValue)
@@ -71,18 +73,11 @@ public sealed class UpdateBeneficiaryCommandHandler : IRequestHandler<UpdateBene
 
         _logger.LogInformation("Beneficiary updated with Id {BeneficiaryId}", beneficiary.Id);
 
-        return new BeneficiaryResponse
-        {
-            Id = beneficiary.Id,
-            UserId = beneficiary.UserId,
-            AddressId = beneficiary.AddressId,
-            IdPhotoUrl = beneficiary.IdPhotoUrl,
-            IsHeadOfHousehold = beneficiary.IsHeadOfHousehold,
-            VerificationStatus = beneficiary.VerificationStatus,
-            VerifiedUntil = beneficiary.VerifiedUntil,
-            CreatedAt = beneficiary.CreatedAt,
-            IsDeleted = beneficiary.IsDeleted
-        };
+        return await _context.Beneficiaries
+            .AsNoTracking()
+            .Where(b => b.Id == beneficiary.Id)
+            .Select(BeneficiaryMappings.ToResponseExpression())
+            .FirstAsync(cancellationToken);
     }
 
     private void EnsureCanManage(Beneficiary beneficiary)

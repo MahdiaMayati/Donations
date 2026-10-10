@@ -23,6 +23,8 @@ public static class DevelopmentDataSeeder
     public const string DemoVolunteerPendingPassword = "Volunteer@12345";
     public const string DemoBeneficiaryEmail = "beneficiary@donation.com";
     public const string DemoBeneficiaryPassword = "Beneficiary@12345";
+    public const string DemoBeneficiary2Email = "beneficiary2@donation.com";
+    public const string DemoBeneficiary2Password = "Beneficiary@12345";
 
     public static async Task SeedAsync(
         UserManager<User> userManager,
@@ -34,6 +36,7 @@ public static class DevelopmentDataSeeder
         var organization = await SeedOrganizationsAsync(context, logger, cancellationToken);
         var areas = await SeedCitiesAndAreasAsync(context, logger, cancellationToken);
         await SeedProfilesAsync(userManager, context, organization, areas, logger, cancellationToken);
+        await SeedFamilyMembersDemoAsync(userManager, context, organization, areas, logger, cancellationToken);
         await SeedAdminRolePermissionsAsync(roleManager, context, logger, cancellationToken);
         await SeedSampleRefreshTokenAsync(userManager, context, logger, cancellationToken);
 
@@ -223,6 +226,7 @@ public static class DevelopmentDataSeeder
         context.Beneficiaries.Add(beneficiary);
         await context.SaveChangesAsync(cancellationToken);
 
+<<<<<<< HEAD
         context.FamilyMembers.AddRange(
             new FamilyMember
             {
@@ -260,6 +264,17 @@ public static class DevelopmentDataSeeder
     }
 
     private static async Task SeedVolunteersAsync(
+=======
+        logger.LogInformation(
+            "Seeded profiles: addresses, donors (incl. soft-deleted), volunteers, beneficiary.");
+    }
+
+    /// <summary>
+    /// Idempotent Family Members demo data for exercising single + batch CRUD.
+    /// Runs even when donors/profiles already exist.
+    /// </summary>
+    private static async Task SeedFamilyMembersDemoAsync(
+>>>>>>> a211c529ed7431505e5bcb3244d053a964071773
         UserManager<User> userManager,
         AppDbContext context,
         Organization organization,
@@ -267,6 +282,7 @@ public static class DevelopmentDataSeeder
         ILogger logger,
         CancellationToken cancellationToken)
     {
+<<<<<<< HEAD
         var area0 = areas[0];
         var area2 = areas.Count > 2 ? areas[2] : areas[0];
 
@@ -426,6 +442,214 @@ public static class DevelopmentDataSeeder
             Longitude = longitude
         });
         await context.SaveChangesAsync(cancellationToken);
+=======
+        if (areas.Count == 0)
+        {
+            logger.LogWarning("No areas available; skipping family members demo seed.");
+            return;
+        }
+
+        var area0 = areas[0];
+        var area1 = areas.Count > 1 ? areas[1] : areas[0];
+
+        var beneficiaryUser = await EnsureUserAsync(
+            userManager, DemoBeneficiaryEmail, DemoBeneficiaryPassword,
+            "Lina", "Beneficiary", "SMS", "User", organization.Id, logger);
+
+        var beneficiaryUser2 = await EnsureUserAsync(
+            userManager, DemoBeneficiary2Email, DemoBeneficiary2Password,
+            "Rami", "HeadTwo", "WhatsApp", "User", organization.Id, logger);
+
+        await EnrichBeneficiaryUserProfileAsync(userManager, beneficiaryUser, logger);
+        await EnrichBeneficiaryUserProfileAsync(userManager, beneficiaryUser2, logger);
+
+        var beneficiary1 = await EnsureBeneficiaryAsync(
+            context,
+            beneficiaryUser,
+            area1.Id,
+            "https://example.com/sample-id-lina.jpg",
+            isHeadOfHousehold: true,
+            cancellationToken);
+
+        var beneficiary2 = await EnsureBeneficiaryAsync(
+            context,
+            beneficiaryUser2,
+            area0.Id,
+            "https://example.com/sample-id-rami.jpg",
+            isHeadOfHousehold: true,
+            cancellationToken);
+
+        var existingNames = await context.FamilyMembers
+            .IgnoreQueryFilters()
+            .Select(m => m.FullName)
+            .ToListAsync(cancellationToken);
+
+        var existingNameSet = existingNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var toAdd = new List<FamilyMember>();
+
+        void AddIfMissing(Guid beneficiaryId, string fullName, DateTime birthDate, bool gender, string clothingSize, string shoe, bool deleted)
+        {
+            if (existingNameSet.Contains(fullName))
+            {
+                return;
+            }
+
+            toAdd.Add(new FamilyMember
+            {
+                BeneficiaryId = beneficiaryId,
+                FullName = fullName,
+                BirthDate = birthDate,
+                Gender = gender,
+                ClothingSize = clothingSize,
+                ShoeSize = shoe,
+                IsDeleted = deleted
+            });
+        }
+
+        // Household 1 — Lina (Gender: true=Male, false=Female)
+        AddIfMissing(beneficiary1.Id, "Omar Beneficiary", new DateTime(2015, 4, 12), gender: true, clothingSize: "M", "36", false);
+        AddIfMissing(beneficiary1.Id, "Nour Beneficiary", new DateTime(2018, 9, 1), gender: false, clothingSize: "S", "32", false);
+        AddIfMissing(beneficiary1.Id, "Yara Beneficiary", new DateTime(2020, 2, 28), gender: false, clothingSize: "XS", "28", false);
+        AddIfMissing(beneficiary1.Id, "Soft-Deleted Child", new DateTime(2012, 1, 20), gender: true, clothingSize: "L", "38", true);
+
+        // Household 2 — Rami
+        AddIfMissing(beneficiary2.Id, "Tariq HeadTwo", new DateTime(2014, 7, 8), gender: true, clothingSize: "L", "37", false);
+        AddIfMissing(beneficiary2.Id, "Hala HeadTwo", new DateTime(2016, 11, 15), gender: false, clothingSize: "M", "34", false);
+
+        if (toAdd.Count > 0)
+        {
+            context.FamilyMembers.AddRange(toAdd);
+            await context.SaveChangesAsync(cancellationToken);
+            logger.LogInformation("Seeded {Count} additional family member demo row(s).", toAdd.Count);
+        }
+        else
+        {
+            logger.LogInformation("Family member demo pack already complete; no inserts.");
+        }
+
+        var seededIds = await context.FamilyMembers
+            .AsNoTracking()
+            .Where(m => !m.IsDeleted)
+            .OrderBy(m => m.FullName)
+            .Select(m => new { m.Id, m.FullName, m.BeneficiaryId })
+            .ToListAsync(cancellationToken);
+
+        logger.LogInformation(
+            "FamilyMembers test logins — {Email1} / {Password1} (HeadOfHouseholdId={HoH1}); {Email2} / {Password2} (HeadOfHouseholdId={HoH2})",
+            DemoBeneficiaryEmail,
+            DemoBeneficiaryPassword,
+            beneficiaryUser.Id,
+            DemoBeneficiary2Email,
+            DemoBeneficiary2Password,
+            beneficiaryUser2.Id);
+        logger.LogInformation(
+            "Admin can list all. Active seeded members: {Members}",
+            string.Join("; ", seededIds.Select(m => $"{m.FullName}={m.Id}")));
+    }
+
+    private static async Task EnrichBeneficiaryUserProfileAsync(
+        UserManager<User> userManager,
+        User user,
+        ILogger logger)
+    {
+        var changed = false;
+
+        if (string.IsNullOrWhiteSpace(user.Job) || user.Job == "Sample")
+        {
+            user.Job = user.Email == DemoBeneficiary2Email ? "Teacher" : "Homemaker";
+            changed = true;
+        }
+
+        if (string.IsNullOrWhiteSpace(user.MaritalStatus) || user.MaritalStatus == "Single")
+        {
+            user.MaritalStatus = "Married";
+            changed = true;
+        }
+
+        if (string.IsNullOrWhiteSpace(user.EducationalStatus))
+        {
+            user.EducationalStatus = "Bachelor";
+            changed = true;
+        }
+
+        if (string.IsNullOrWhiteSpace(user.HealthStatus))
+        {
+            user.HealthStatus = "Good";
+            changed = true;
+        }
+
+        if (user.DateOfBirth is null)
+        {
+            user.DateOfBirth = user.Email == DemoBeneficiary2Email
+                ? new DateTime(1988, 3, 10)
+                : new DateTime(1990, 8, 22);
+            changed = true;
+        }
+
+        if (changed)
+        {
+            await userManager.UpdateAsync(user);
+            logger.LogInformation("Enriched profile fields for demo user {Email}.", user.Email);
+        }
+    }
+
+    private static async Task<Beneficiary> EnsureBeneficiaryAsync(
+        AppDbContext context,
+        User user,
+        Guid areaId,
+        string idPhotoUrl,
+        bool isHeadOfHousehold,
+        CancellationToken cancellationToken)
+    {
+        var existing = await context.Beneficiaries
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(b => b.UserId == user.Id && !b.IsDeleted, cancellationToken);
+
+        if (existing is not null)
+        {
+            if (!existing.IsHeadOfHousehold && isHeadOfHousehold)
+            {
+                existing.IsHeadOfHousehold = true;
+                await context.SaveChangesAsync(cancellationToken);
+            }
+
+            return existing;
+        }
+
+        var address = await context.Addresses
+            .FirstOrDefaultAsync(a => a.UserId == user.Id, cancellationToken);
+
+        if (address is null)
+        {
+            address = new Address
+            {
+                AreaId = areaId,
+                UserId = user.Id,
+                Street = $"Demo Street for {user.FirstName}",
+                Details = "Seeded address for FamilyMembers testing",
+                Latitude = 31.9000,
+                Longitude = 35.2000
+            };
+            context.Addresses.Add(address);
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        var beneficiary = new Beneficiary
+        {
+            UserId = user.Id,
+            AddressId = address.Id,
+            IdPhotoUrl = idPhotoUrl,
+            IsHeadOfHousehold = isHeadOfHousehold,
+            VerificationStatus = VerificationStatus.Verified,
+            VerifiedUntil = DateTime.UtcNow.AddMonths(6),
+            IsDeleted = false
+        };
+
+        context.Beneficiaries.Add(beneficiary);
+        await context.SaveChangesAsync(cancellationToken);
+        return beneficiary;
+>>>>>>> a211c529ed7431505e5bcb3244d053a964071773
     }
 
     private static async Task SeedAdminRolePermissionsAsync(

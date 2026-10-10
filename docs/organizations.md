@@ -31,19 +31,21 @@ Organization CRUD uses **CQRS** (Commands / Queries / Handlers via MediatR) with
 
 | Method | Route | Auth | Notes |
 |--------|-------|------|--------|
-| GET | `/api/organizations?pageNumber=1&pageSize=10` | `Admin` or `SuperAdmin` | Paginated (PageSize 1–100) |
-| GET | `/api/organizations/{id}` | `Admin` or `SuperAdmin` | Get by id (excludes soft-deleted) |
-| POST | `/api/organizations` | `Admin` or `SuperAdmin` | Create (`Name`, `IsActive`) |
-| PUT | `/api/organizations/{id}` | `Admin` or `SuperAdmin` | Update |
-| DELETE | `/api/organizations/{id}` | `Admin` or `SuperAdmin` | Soft delete if no related users/roles |
+| GET | `/api/v1/organizations?page=1&limit=10` | `Admin` or `SuperAdmin` | Paginated (`limit` 1–100; optional `search`) |
+| GET | `/api/v1/organizations/{id}` | `Admin` or `SuperAdmin` | Get by id (excludes soft-deleted) |
+| POST | `/api/v1/organizations` | `Admin` or `SuperAdmin` | Create (`Name`, `IsActive`) |
+| PUT | `/api/v1/organizations/{id}` | `Admin` or `SuperAdmin` | Update |
+| DELETE | `/api/v1/organizations/{id}` | `Admin` or `SuperAdmin` | Soft delete if no related users/roles |
+
+See [pagination.md](pagination.md) for the shared `PaginatedResult` contract.
 
 ## Related endpoint changes
 
 | Endpoint | Change |
 |----------|--------|
-| `POST /api/auth/register` | **Requires** `OrganizationId` (must exist, not deleted, active) |
-| `POST /api/RolesAndPermissions/roles` | **Requires** `OrganizationId` |
-| `GET /api/RolesAndPermissions/roles` | Response includes `organizationId` |
+| `POST /api/v1/auth/register` | **Requires** `OrganizationId` (must exist, not deleted, active) |
+| `POST /api/v1/RolesAndPermissions/roles` | **Requires** `OrganizationId` |
+| `GET /api/v1/RolesAndPermissions/roles?page=1&limit=10` | Paginated; response items include `organizationId` |
 
 ## Security & validation
 

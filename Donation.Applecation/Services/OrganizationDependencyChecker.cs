@@ -33,6 +33,22 @@ public sealed class OrganizationDependencyChecker : IOrganizationDependencyCheck
             return (true, "Cannot delete this organization because it has related roles.");
         }
 
+        var hasWarehouses = await _context.Warehouses
+            .AnyAsync(w => w.OrganizationId == organizationId && !w.IsDeleted, cancellationToken);
+
+        if (hasWarehouses)
+        {
+            return (true, "Cannot delete this organization because it has related warehouses.");
+        }
+
+        var hasDonationRequests = await _context.DonationRequests
+            .AnyAsync(d => d.OrganizationId == organizationId, cancellationToken);
+
+        if (hasDonationRequests)
+        {
+            return (true, "Cannot delete this organization because it has related donation requests.");
+        }
+
         return (false, string.Empty);
     }
 }

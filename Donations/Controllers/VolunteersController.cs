@@ -1,4 +1,5 @@
 using Donation.Application.Common.Exceptions;
+using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.Volunteer.Request;
 using Donation.Application.Features.Volunteers.Commands.CreateVolunteer;
 using Donation.Application.Features.Volunteers.Commands.DeleteVolunteer;
@@ -15,8 +16,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Donation.Api.Controllers;
 
+[ApiExplorerSettings(GroupName = "volunteers")]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [Authorize]
 public class VolunteersController : BaseController
 {
@@ -28,11 +30,15 @@ public class VolunteersController : BaseController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] PaginationRequest pagination,
+        CancellationToken cancellationToken)
     {
         try
         {
-            var items = await _sender.Send(new GetAllVolunteersQuery(), cancellationToken);
+            var items = await _sender.Send(
+                new GetAllVolunteersQuery(pagination.Page, pagination.Limit, pagination.Search),
+                cancellationToken);
             return CustomResponse(items, "Volunteers retrieved successfully.");
         }
         catch (ForbiddenException ex)
