@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Donation.Api.Controllers;
 
 [AllowAnonymous]
+[ApiExplorerSettings(GroupName = "security")]
 [ApiController]
 [Route("api/v1/[controller]")]
 public class AuthController : ControllerBase

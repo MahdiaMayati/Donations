@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Donation.Api.Controllers;
 
+[ApiExplorerSettings(GroupName = "security")]
 [ApiController]
 [Route("api/v1/users")]
 [Authorize]

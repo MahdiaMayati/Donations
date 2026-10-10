@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Donation.Api.Controllers;
 
+[ApiExplorerSettings(GroupName = "warehouses")]
 [ApiController]
 [Route("api/v1/storage-locations")]
 [Authorize(Roles = "Admin,SuperAdmin")]
