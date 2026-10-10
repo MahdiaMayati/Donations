@@ -24,4 +24,7 @@
 ## Migration
 
 - `Donation.Infrastructure/Migrations/20261010084521_AddVolunteerExperiencesAndNeglectedTasksCount.cs`
+- `Donation.Infrastructure/Migrations/20261010095302_EnsureVolunteerProfileColumns.cs` (idempotent safety net for production)
 - Apply: `dotnet ef database update --project Donation.Infrastructure --startup-project Donations`
+
+If `GET /api/v1/Volunteers` returns HTTP 500 after deploy, the remote DB is usually missing Volunteer profile columns while the API expects them. Startup now fails hard on migration errors (no longer swallowed), and the ensure migration adds any missing columns safely.

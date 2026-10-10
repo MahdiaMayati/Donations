@@ -139,11 +139,14 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    var startupLogger = services.GetRequiredService<ILogger<Program>>();
+    var context = services.GetRequiredService<AppDbContext>();
+
+    // Migrations must succeed; swallowing failures leaves the API up with a broken schema (HTTP 500s).
+    await context.Database.MigrateAsync();
+
     try
     {
-        var context = services.GetRequiredService<AppDbContext>();
-        await context.Database.MigrateAsync();
-
         var userManager = services.GetRequiredService<UserManager<User>>();
         var roleManager = services.GetRequiredService<RoleManager<Role>>();
         var logger = services.GetRequiredService<ILogger<RbacDbSeeder>>();
@@ -158,8 +161,7 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred during database migration/seeding.");
+        startupLogger.LogError(ex, "An error occurred during database seeding.");
     }
 }
 

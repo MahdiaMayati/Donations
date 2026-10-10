@@ -45,6 +45,12 @@ public class VolunteersController : BaseController
         {
             return CustomErrorResponse(ex.Message, StatusCodes.Status403Forbidden);
         }
+        catch (Exception ex)
+        {
+            return CustomErrorResponse(
+                ex.InnerException?.Message ?? ex.Message,
+                StatusCodes.Status500InternalServerError);
+        }
     }
 
     [HttpGet("deleted/count")]
