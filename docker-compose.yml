@@ -23,6 +23,7 @@ services:
   api:
     image: ghcr.io/${GITHUB_REPOSITORY_LC}:latest
     container_name: donations-api
+    restart: unless-stopped
     ports:
       - "9999:8080"
     environment:

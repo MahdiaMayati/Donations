@@ -10,37 +10,38 @@ namespace Donation.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // Idempotent ADD-only safety net. Avoid DROP/RENAME of Status here —
+            // that conversion belongs to ExpandVolunteerProfile and can crash startup
+            // when default constraints still exist on the column.
             migrationBuilder.Sql("""
                 IF COL_LENGTH('Volunteers', 'OrganizationId') IS NULL
                 BEGIN
                     ALTER TABLE Volunteers ADD OrganizationId uniqueidentifier NULL;
 
-                    IF NOT EXISTS (SELECT 1 FROM Organizations WHERE IsDeleted = 0)
+                    IF EXISTS (SELECT 1 FROM Organizations WHERE IsDeleted = 0)
                     BEGIN
-                        INSERT INTO Organizations (Id, Name, IsActive, IsDeleted, CreatedAt)
-                        VALUES (NEWID(), N'Hope Donation Center', 1, 0, GETUTCDATE());
+                        UPDATE v
+                        SET v.OrganizationId = o.Id
+                        FROM Volunteers v
+                        CROSS APPLY (
+                            SELECT TOP 1 Id FROM Organizations WHERE IsDeleted = 0 ORDER BY CreatedAt
+                        ) o
+                        WHERE v.OrganizationId IS NULL;
                     END
 
-                    UPDATE v
-                    SET v.OrganizationId = o.Id
-                    FROM Volunteers v
-                    CROSS APPLY (
-                        SELECT TOP 1 Id FROM Organizations WHERE IsDeleted = 0 ORDER BY CreatedAt
-                    ) o
-                    WHERE v.OrganizationId IS NULL;
-
-                    ALTER TABLE Volunteers ALTER COLUMN OrganizationId uniqueidentifier NOT NULL;
-
-                    IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Volunteers_Organizations_OrganizationId')
+                    IF NOT EXISTS (SELECT 1 FROM Volunteers WHERE OrganizationId IS NULL)
                     BEGIN
-                        ALTER TABLE Volunteers WITH CHECK
-                        ADD CONSTRAINT FK_Volunteers_Organizations_OrganizationId
-                        FOREIGN KEY (OrganizationId) REFERENCES Organizations(Id);
-                    END
+                        ALTER TABLE Volunteers ALTER COLUMN OrganizationId uniqueidentifier NOT NULL;
 
-                    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Volunteers_OrganizationId' AND object_id = OBJECT_ID('Volunteers'))
-                    BEGIN
-                        CREATE INDEX IX_Volunteers_OrganizationId ON Volunteers(OrganizationId);
+                        IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_Volunteers_Organizations_OrganizationId')
+                        BEGIN
+                            ALTER TABLE Volunteers WITH CHECK
+                            ADD CONSTRAINT FK_Volunteers_Organizations_OrganizationId
+                            FOREIGN KEY (OrganizationId) REFERENCES Organizations(Id);
+                        END
+
+                        IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Volunteers_OrganizationId' AND object_id = OBJECT_ID('Volunteers'))
+                            CREATE INDEX IX_Volunteers_OrganizationId ON Volunteers(OrganizationId);
                     END
                 END
 
@@ -67,31 +68,6 @@ namespace Donation.Infrastructure.Migrations
 
                 IF COL_LENGTH('Volunteers', 'DeletedAt') IS NULL
                     ALTER TABLE Volunteers ADD DeletedAt datetime2 NULL;
-
-                IF EXISTS (
-                    SELECT 1
-                    FROM sys.columns c
-                    INNER JOIN sys.types t ON c.user_type_id = t.user_type_id
-                    WHERE c.object_id = OBJECT_ID('Volunteers')
-                      AND c.name = 'Status'
-                      AND t.name IN ('int', 'tinyint', 'smallint')
-                )
-                BEGIN
-                    ALTER TABLE Volunteers ADD StatusText nvarchar(20) NOT NULL CONSTRAINT DF_Volunteers_StatusText DEFAULT(N'Active');
-
-                    EXEC(N'
-                        UPDATE Volunteers SET StatusText = CASE Status
-                            WHEN 1 THEN N''Pending''
-                            WHEN 2 THEN N''Active''
-                            WHEN 3 THEN N''Inactive''
-                            WHEN 4 THEN N''Suspended''
-                            ELSE N''Active''
-                        END;
-                    ');
-
-                    ALTER TABLE Volunteers DROP COLUMN Status;
-                    EXEC sp_rename 'Volunteers.StatusText', 'Status', 'COLUMN';
-                END
                 """);
         }
 
