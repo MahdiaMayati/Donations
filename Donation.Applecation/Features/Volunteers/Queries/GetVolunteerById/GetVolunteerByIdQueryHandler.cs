@@ -27,14 +27,9 @@ public sealed class GetVolunteerByIdQueryHandler : IRequestHandler<GetVolunteerB
 
         var volunteer = await _context.Volunteers
             .AsNoTracking()
-            .Where(v => v.Id == request.Id)
-            .Select(v => new VolunteerResponse
-            {
-                Id = v.Id,
-                UserId = v.UserId,
-                Status = v.Status
-            })
-            .FirstOrDefaultAsync(cancellationToken);
+            .Include(v => v.User)
+            .Include(v => v.Organization)
+            .FirstOrDefaultAsync(v => v.Id == request.Id, cancellationToken);
 
         if (volunteer is null)
         {
@@ -46,6 +41,14 @@ public sealed class GetVolunteerByIdQueryHandler : IRequestHandler<GetVolunteerB
             throw new ForbiddenException("You can only view your own volunteer profile.");
         }
 
-        return volunteer;
+        var address = await _context.Addresses
+            .AsNoTracking()
+            .Include(a => a.Area)
+                .ThenInclude(ar => ar.City)
+            .Where(a => a.UserId == volunteer.UserId)
+            .OrderByDescending(a => a.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return VolunteerMapping.ToResponse(volunteer, volunteer.User, volunteer.Organization, address);
     }
 }

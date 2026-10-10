@@ -131,16 +131,27 @@ public static class DevelopmentDataSeeder
             return;
         }
 
+        await SeedDonorsAndHouseholdAsync(userManager, context, organization, areas, logger, cancellationToken);
+        await SeedVolunteersAsync(userManager, context, organization, areas, logger, cancellationToken);
+    }
+
+    private static async Task SeedDonorsAndHouseholdAsync(
+        UserManager<User> userManager,
+        AppDbContext context,
+        Organization organization,
+        IReadOnlyList<Area> areas,
+        ILogger logger,
+        CancellationToken cancellationToken)
+    {
         var hasDonors = await context.Donors.IgnoreQueryFilters().AnyAsync(cancellationToken);
         if (hasDonors)
         {
-            logger.LogInformation("Profile sample data already present; skipping profiles.");
+            logger.LogInformation("Donor/beneficiary sample data already present; skipping that section.");
             return;
         }
 
         var area0 = areas[0];
         var area1 = areas.Count > 1 ? areas[1] : areas[0];
-        var area2 = areas.Count > 2 ? areas[2] : areas[0];
 
         var donorUser = await EnsureUserAsync(
             userManager, DemoDonorEmail, DemoDonorPassword,
@@ -149,14 +160,6 @@ public static class DevelopmentDataSeeder
         var deletedDonorUser = await EnsureUserAsync(
             userManager, DemoDonorDeletedEmail, DemoDonorDeletedPassword,
             "Khaled", "DeletedDonor", "SMS", "User", organization.Id, logger);
-
-        var volunteerUser = await EnsureUserAsync(
-            userManager, DemoVolunteerEmail, DemoVolunteerPassword,
-            "Sara", "Volunteer", "Call", "User", organization.Id, logger);
-
-        var pendingVolunteerUser = await EnsureUserAsync(
-            userManager, DemoVolunteerPendingEmail, DemoVolunteerPendingPassword,
-            "Maya", "PendingVolunteer", "WhatsApp", "User", null, logger);
 
         var beneficiaryUser = await EnsureUserAsync(
             userManager, DemoBeneficiaryEmail, DemoBeneficiaryPassword,
@@ -182,16 +185,6 @@ public static class DevelopmentDataSeeder
             Longitude = 35.2544
         };
 
-        var volunteerAddress = new Address
-        {
-            AreaId = area2.Id,
-            UserId = volunteerUser.Id,
-            Street = "Volunteer Lane 7",
-            Details = "Apartment 4",
-            Latitude = 31.7054,
-            Longitude = 35.2024
-        };
-
         var beneficiaryAddress = new Address
         {
             AreaId = area1.Id,
@@ -202,7 +195,7 @@ public static class DevelopmentDataSeeder
             Longitude = 35.2045
         };
 
-        context.Addresses.AddRange(donorAddress, deletedDonorAddress, volunteerAddress, beneficiaryAddress);
+        context.Addresses.AddRange(donorAddress, deletedDonorAddress, beneficiaryAddress);
         await context.SaveChangesAsync(cancellationToken);
 
         context.Donors.AddRange(
@@ -219,18 +212,6 @@ public static class DevelopmentDataSeeder
                 DeletedAt = DateTime.UtcNow.AddDays(-2)
             });
 
-        context.Volunteers.AddRange(
-            new Volunteer
-            {
-                UserId = volunteerUser.Id,
-                Status = VolunteerStatus.Active
-            },
-            new Volunteer
-            {
-                UserId = pendingVolunteerUser.Id,
-                Status = VolunteerStatus.Pending
-            });
-
         var beneficiary = new Beneficiary
         {
             UserId = beneficiaryUser.Id,
@@ -245,6 +226,45 @@ public static class DevelopmentDataSeeder
         context.Beneficiaries.Add(beneficiary);
         await context.SaveChangesAsync(cancellationToken);
 
+<<<<<<< HEAD
+        context.FamilyMembers.AddRange(
+            new FamilyMember
+            {
+                BeneficiaryId = beneficiary.Id,
+                FullName = "Omar Beneficiary",
+                BirthDate = new DateTime(2015, 4, 12),
+                Gender = Gender.Male,
+                ClothingSize = ClothingSize.M,
+                ShoeSize = "36",
+                IsDeleted = false
+            },
+            new FamilyMember
+            {
+                BeneficiaryId = beneficiary.Id,
+                FullName = "Nour Beneficiary",
+                BirthDate = new DateTime(2018, 9, 1),
+                Gender = Gender.Female,
+                ClothingSize = ClothingSize.S,
+                ShoeSize = "32",
+                IsDeleted = false
+            },
+            new FamilyMember
+            {
+                BeneficiaryId = beneficiary.Id,
+                FullName = "Soft-Deleted Child",
+                BirthDate = new DateTime(2012, 1, 20),
+                Gender = Gender.Male,
+                ClothingSize = ClothingSize.L,
+                ShoeSize = "38",
+                IsDeleted = true
+            });
+
+        await context.SaveChangesAsync(cancellationToken);
+        logger.LogInformation("Seeded donor/beneficiary sample profiles.");
+    }
+
+    private static async Task SeedVolunteersAsync(
+=======
         logger.LogInformation(
             "Seeded profiles: addresses, donors (incl. soft-deleted), volunteers, beneficiary.");
     }
@@ -254,6 +274,7 @@ public static class DevelopmentDataSeeder
     /// Runs even when donors/profiles already exist.
     /// </summary>
     private static async Task SeedFamilyMembersDemoAsync(
+>>>>>>> a211c529ed7431505e5bcb3244d053a964071773
         UserManager<User> userManager,
         AppDbContext context,
         Organization organization,
@@ -261,6 +282,167 @@ public static class DevelopmentDataSeeder
         ILogger logger,
         CancellationToken cancellationToken)
     {
+<<<<<<< HEAD
+        var area0 = areas[0];
+        var area2 = areas.Count > 2 ? areas[2] : areas[0];
+
+        var volunteerUser = await EnsureUserAsync(
+            userManager, DemoVolunteerEmail, DemoVolunteerPassword,
+            "Sara", "Volunteer", "Call", "User", organization.Id, logger);
+
+        var pendingVolunteerUser = await EnsureUserAsync(
+            userManager, DemoVolunteerPendingEmail, DemoVolunteerPendingPassword,
+            "Maya", "PendingVolunteer", "WhatsApp", "User", organization.Id, logger);
+
+        // Enrich incomplete volunteers left over from schema migration.
+        var incomplete = await context.Volunteers
+            .IgnoreQueryFilters()
+            .Where(v => v.Days == null || v.Days == string.Empty)
+            .ToListAsync(cancellationToken);
+
+        foreach (var volunteer in incomplete)
+        {
+            volunteer.OrganizationId = organization.Id;
+            volunteer.Days = volunteer.UserId == volunteerUser.Id ? "Saturday,Sunday" : "Monday,Wednesday";
+            volunteer.HoursCount = volunteer.UserId == volunteerUser.Id ? 8 : 4;
+            volunteer.Hobbies = volunteer.UserId == volunteerUser.Id ? "Reading, Hiking" : "Photography";
+            volunteer.Skills = volunteer.UserId == volunteerUser.Id ? "First aid, Logistics" : "Communication";
+            if (string.IsNullOrWhiteSpace(volunteer.Status))
+            {
+                volunteer.Status = "Active";
+            }
+        }
+
+        if (incomplete.Count > 0)
+        {
+            await context.SaveChangesAsync(cancellationToken);
+            logger.LogInformation("Enriched {Count} incomplete volunteer row(s).", incomplete.Count);
+        }
+
+        await EnsureAddressAsync(
+            context,
+            volunteerUser.Id,
+            area2.Id,
+            "Volunteer Lane 7",
+            "Apartment 4",
+            31.7054,
+            35.2024,
+            cancellationToken);
+
+        await EnsureAddressAsync(
+            context,
+            pendingVolunteerUser.Id,
+            area0.Id,
+            "Pending Ave 1",
+            "Floor 1",
+            31.9000,
+            35.2000,
+            cancellationToken);
+
+        var hasActiveVolunteer = await context.Volunteers
+            .AnyAsync(v => v.UserId == volunteerUser.Id, cancellationToken);
+
+        if (!hasActiveVolunteer)
+        {
+            context.Volunteers.Add(new Volunteer
+            {
+                UserId = volunteerUser.Id,
+                OrganizationId = organization.Id,
+                Status = "Active",
+                Days = "Saturday,Sunday",
+                HoursCount = 8,
+                Hobbies = "Reading, Hiking",
+                Skills = "First aid, Logistics",
+                IsDeleted = false
+            });
+        }
+
+        var hasPendingVolunteer = await context.Volunteers
+            .IgnoreQueryFilters()
+            .AnyAsync(v => v.UserId == pendingVolunteerUser.Id, cancellationToken);
+
+        if (!hasPendingVolunteer)
+        {
+            context.Volunteers.Add(new Volunteer
+            {
+                UserId = pendingVolunteerUser.Id,
+                OrganizationId = organization.Id,
+                Status = "Pending",
+                Days = "Monday,Wednesday",
+                HoursCount = 4,
+                Hobbies = "Photography",
+                Skills = "Communication",
+                IsDeleted = false
+            });
+        }
+
+        // Soft-deleted sample for restore/deleted endpoints.
+        var softDeletedEmail = "volunteer.deleted@donation.com";
+        var softDeletedUser = await EnsureUserAsync(
+            userManager, softDeletedEmail, DemoVolunteerPassword,
+            "Omar", "DeletedVolunteer", "SMS", "User", organization.Id, logger);
+
+        await EnsureAddressAsync(
+            context,
+            softDeletedUser.Id,
+            area0.Id,
+            "Archive Street 9",
+            "Soft-deleted volunteer address",
+            31.9100,
+            35.2100,
+            cancellationToken);
+
+        var hasSoftDeleted = await context.Volunteers
+            .IgnoreQueryFilters()
+            .AnyAsync(v => v.UserId == softDeletedUser.Id, cancellationToken);
+
+        if (!hasSoftDeleted)
+        {
+            context.Volunteers.Add(new Volunteer
+            {
+                UserId = softDeletedUser.Id,
+                OrganizationId = organization.Id,
+                Status = "Inactive",
+                Days = "Friday",
+                HoursCount = 2,
+                Hobbies = "Chess",
+                Skills = "Driving",
+                IsDeleted = true,
+                DeletedAt = DateTime.UtcNow.AddDays(-1)
+            });
+        }
+
+        await context.SaveChangesAsync(cancellationToken);
+        logger.LogInformation("Volunteer sample data ensured (active, pending, soft-deleted).");
+    }
+
+    private static async Task EnsureAddressAsync(
+        AppDbContext context,
+        Guid userId,
+        Guid areaId,
+        string street,
+        string details,
+        double latitude,
+        double longitude,
+        CancellationToken cancellationToken)
+    {
+        var exists = await context.Addresses.AnyAsync(a => a.UserId == userId, cancellationToken);
+        if (exists)
+        {
+            return;
+        }
+
+        context.Addresses.Add(new Address
+        {
+            AreaId = areaId,
+            UserId = userId,
+            Street = street,
+            Details = details,
+            Latitude = latitude,
+            Longitude = longitude
+        });
+        await context.SaveChangesAsync(cancellationToken);
+=======
         if (areas.Count == 0)
         {
             logger.LogWarning("No areas available; skipping family members demo seed.");
@@ -467,6 +649,7 @@ public static class DevelopmentDataSeeder
         context.Beneficiaries.Add(beneficiary);
         await context.SaveChangesAsync(cancellationToken);
         return beneficiary;
+>>>>>>> a211c529ed7431505e5bcb3244d053a964071773
     }
 
     private static async Task SeedAdminRolePermissionsAsync(

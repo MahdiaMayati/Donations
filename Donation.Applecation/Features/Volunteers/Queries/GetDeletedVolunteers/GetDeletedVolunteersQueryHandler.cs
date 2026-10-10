@@ -1,48 +1,41 @@
 using Donation.Application.Abstractions.Persistence;
 using Donation.Application.Abstractions.Services;
 using Donation.Application.Common.Exceptions;
-using Donation.Application.Common.Pagination;
 using Donation.Application.DTOs.Volunteer.Response;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Donation.Application.Features.Volunteers.Queries.GetAllVolunteers;
+namespace Donation.Application.Features.Volunteers.Queries.GetDeletedVolunteers;
 
-public sealed class GetAllVolunteersQueryHandler
-    : IRequestHandler<GetAllVolunteersQuery, PaginatedResult<VolunteerResponse>>
+public sealed class GetDeletedVolunteersQueryHandler
+    : IRequestHandler<GetDeletedVolunteersQuery, IReadOnlyList<VolunteerResponse>>
 {
     private readonly IAppDbContext _context;
     private readonly ICurrentUserService _currentUser;
 
-    public GetAllVolunteersQueryHandler(IAppDbContext context, ICurrentUserService currentUser)
+    public GetDeletedVolunteersQueryHandler(IAppDbContext context, ICurrentUserService currentUser)
     {
         _context = context;
         _currentUser = currentUser;
     }
 
-    public async Task<PaginatedResult<VolunteerResponse>> Handle(
-        GetAllVolunteersQuery request,
+    public async Task<IReadOnlyList<VolunteerResponse>> Handle(
+        GetDeletedVolunteersQuery request,
         CancellationToken cancellationToken)
     {
-        if (_currentUser.UserId is null)
+        if (!_currentUser.IsAdmin)
         {
-            throw new ForbiddenException("Authentication is required.");
+            throw new ForbiddenException("Only Admin users can view soft-deleted volunteers.");
         }
 
-        var query = _context.Volunteers
+        var volunteers = await _context.Volunteers
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .Include(v => v.User)
             .Include(v => v.Organization)
-            .AsQueryable();
-
-        if (!_currentUser.IsAdmin)
-        {
-            query = query.Where(v => v.UserId == _currentUser.UserId.Value);
-        }
-
-        var volunteers = await query
-            .OrderByDescending(v => v.Id)
-<<<<<<< HEAD
+            .Where(v => v.IsDeleted)
+            .OrderByDescending(v => v.DeletedAt)
+            .ThenByDescending(v => v.Id)
             .ToListAsync(cancellationToken);
 
         var userIds = volunteers.Select(v => v.UserId).Distinct().ToList();
@@ -65,14 +58,5 @@ public sealed class GetAllVolunteersQueryHandler
                 v.Organization,
                 addressByUser.GetValueOrDefault(v.UserId)))
             .ToList();
-=======
-            .Select(v => new VolunteerResponse
-            {
-                Id = v.Id,
-                UserId = v.UserId,
-                Status = v.Status
-            })
-            .ToPaginatedListAsync(request.Page, request.Limit, cancellationToken);
->>>>>>> a211c529ed7431505e5bcb3244d053a964071773
     }
 }

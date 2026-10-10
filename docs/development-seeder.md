@@ -7,6 +7,14 @@ In **Development**, after `RbacDbSeeder`, `DevelopmentDataSeeder` fills sample r
 | Table / area | Sample data |
 |--------------|-------------|
 | Organizations | Hope Donation Center (active), Legacy Aid Org (inactive) |
+<<<<<<< HEAD
+| Cities / Areas | Sample cities and areas |
+| Addresses | Linked to demo users (incl. volunteers) |
+| Donors | Active + soft-deleted |
+| Volunteers | Active + Pending with `organizationId`, `days`, `hoursCount`, `hobbies`, `skills` |
+| Beneficiaries / FamilyMembers | Sample household |
+| RolePermissions / RefreshTokens | Admin permissions + sample token |
+=======
 | Cities | Ramallah, Nablus, Hebron, Bethlehem, Jenin |
 | Areas | Center + North per city |
 | Addresses | Linked to demo users |
@@ -18,9 +26,18 @@ In **Development**, after `RbacDbSeeder`, `DevelopmentDataSeeder` fills sample r
 | Permissions | From `RbacDbSeeder` |
 | RolePermissions | All permissions assigned to Admin |
 | RefreshTokens | One active sample token for admin |
+>>>>>>> a211c529ed7431505e5bcb3244d053a964071773
 
-## Demo logins
+## Demo volunteer logins
 
+<<<<<<< HEAD
+| Email | Password |
+|-------|----------|
+| `volunteer@donation.com` | `Volunteer@12345` |
+| `volunteer.pending@donation.com` | `Volunteer@12345` |
+
+Restart the API after schema updates so migrations + seeders run.
+=======
 | Email | Password | Role | Notes |
 |-------|----------|------|--------|
 | `admin@donation.com` | `Admin@12345` | Admin | Sees all family members |
@@ -56,3 +73,4 @@ Check startup logs for lines starting with `FamilyMembers test logins` and `Acti
 - Idempotent per section. Family members seeding is **separate** from donors so it still runs if donors were seeded earlier.
 - If family members already exist, inserts are skipped (HoH UserIds are still logged).
 - To force re-seed family members: delete rows from `FamilyMembers` (or drop `DonationDb`), then restart.
+>>>>>>> a211c529ed7431505e5bcb3244d053a964071773

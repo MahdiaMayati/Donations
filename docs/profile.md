@@ -72,6 +72,16 @@ Ownership is via `Beneficiary.UserId` (Head of Household).
 
 | Method | Path | Description |
 |--------|------|-------------|
+<<<<<<< HEAD
+| GET | `/api/Volunteers` | Own (Admin: all) with user + address (areaName/cityName); no password |
+| GET | `/api/Volunteers/deleted/count` | **Admin only** — soft-deleted count |
+| GET | `/api/Volunteers/deleted` | **Admin only** — soft-deleted volunteers (`IgnoreQueryFilters`) |
+| GET | `/api/Volunteers/{id}` | Full profile + address |
+| POST | `/api/Volunteers` | Create for current user + address. Duplicate UserId → 409 |
+| POST | `/api/Volunteers/{id}/restore` | **Admin only** — restore soft-deleted volunteer |
+| PUT | `/api/Volunteers/{id}` | Update volunteer fields and/or address |
+| DELETE | `/api/Volunteers/{id}` | Soft delete (`IsDeleted=true`, `DeletedAt=UtcNow`) |
+=======
 | GET | `/api/v1/Volunteers?page=1&limit=10` | Own (Admin: all); paginated |
 | GET | `/api/v1/Volunteers/{id}` | Get by id |
 | POST | `/api/v1/Volunteers` | Create for current user with `status=Pending`. Duplicate UserId → 409 |
@@ -79,8 +89,11 @@ Ownership is via `Beneficiary.UserId` (Head of Household).
 | DELETE | `/api/v1/Volunteers/{id}` | Hard delete |
 
 List endpoints use the shared pagination contract — see [pagination.md](pagination.md).
+>>>>>>> a211c529ed7431505e5bcb3244d053a964071773
 
-**VolunteerResponse:** `id`, `userId`, `status`
+**CreateVolunteerRequest:** `organizationId`, `status?` (default Active), `days`, `hoursCount`, `hobbies?`, `skills?`, `address`  
+**UpdateVolunteerRequest:** same fields optional  
+**VolunteerResponse:** volunteer fields + user (`fullName`, `email`, `phoneNumber`, `preferredContactMethod`) + nested address (no password, no nested `userId`)
 
 ## Soft vs hard delete
 

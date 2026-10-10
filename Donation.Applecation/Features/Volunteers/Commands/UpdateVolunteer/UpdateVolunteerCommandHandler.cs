@@ -33,6 +33,8 @@ public sealed class UpdateVolunteerCommandHandler : IRequestHandler<UpdateVolunt
         }
 
         var volunteer = await _context.Volunteers
+            .Include(v => v.User)
+            .Include(v => v.Organization)
             .FirstOrDefaultAsync(v => v.Id == request.Id, cancellationToken);
 
         if (volunteer is null)
@@ -40,27 +42,119 @@ public sealed class UpdateVolunteerCommandHandler : IRequestHandler<UpdateVolunt
             return null;
         }
 
-        // Owner may view but cannot change Status; only Admin/SuperAdmin can update.
-        if (!_currentUser.IsAdmin)
-        {
-            if (volunteer.UserId != _currentUser.UserId)
-            {
-                throw new ForbiddenException("You can only manage your own volunteer profile.");
-            }
+        EnsureCanManage(volunteer);
 
-            throw new ForbiddenException("Only administrators can update volunteer status.");
+        if (request.OrganizationId.HasValue)
+        {
+            var organization = await _context.Organizations
+                .FirstOrDefaultAsync(o => o.Id == request.OrganizationId.Value && !o.IsDeleted, cancellationToken)
+                ?? throw new NotFoundException("Organization not found.");
+
+            volunteer.OrganizationId = organization.Id;
+            volunteer.Organization = organization;
         }
 
-        volunteer.Status = request.Status;
+        if (!string.IsNullOrWhiteSpace(request.Status))
+        {
+            volunteer.Status = VolunteerMapping.AllowedStatuses
+                .First(s => s.Equals(request.Status.Trim(), StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (request.Days is not null)
+        {
+            volunteer.Days = request.Days.Trim();
+        }
+
+        if (request.HoursCount.HasValue)
+        {
+            volunteer.HoursCount = request.HoursCount.Value;
+        }
+
+        if (request.Hobbies is not null)
+        {
+            volunteer.Hobbies = string.IsNullOrWhiteSpace(request.Hobbies) ? null : request.Hobbies.Trim();
+        }
+
+        if (request.Skills is not null)
+        {
+            volunteer.Skills = string.IsNullOrWhiteSpace(request.Skills) ? null : request.Skills.Trim();
+        }
+
+        if (request.Experiences is not null)
+        {
+            volunteer.Experiences = string.IsNullOrWhiteSpace(request.Experiences) ? null : request.Experiences.Trim();
+        }
+
+        if (request.NeglectedTasksCount.HasValue)
+        {
+            volunteer.NeglectedTasksCount = request.NeglectedTasksCount.Value;
+        }
+
+        Address? address = await _context.Addresses
+            .Where(a => a.UserId == volunteer.UserId)
+            .OrderByDescending(a => a.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (request.Address is not null)
+        {
+            var areaExists = await _context.Areas
+                .AnyAsync(a => a.Id == request.Address.AreaId, cancellationToken);
+
+            if (!areaExists)
+            {
+                throw new NotFoundException("Area not found.");
+            }
+
+            if (address is null)
+            {
+                address = new Address { UserId = volunteer.UserId };
+                _context.Addresses.Add(address);
+            }
+
+            address.AreaId = request.Address.AreaId;
+            address.Street = request.Address.Street.Trim();
+            address.Details = request.Address.Details.Trim();
+            address.Latitude = request.Address.Latitude;
+            address.Longitude = request.Address.Longitude;
+        }
+
         await _context.SaveChangesAsync(cancellationToken);
+
+        Address? addressWithLocation = null;
+        if (address is not null)
+        {
+            addressWithLocation = await _context.Addresses
+                .AsNoTracking()
+                .Include(a => a.Area)
+                    .ThenInclude(ar => ar.City)
+                .FirstOrDefaultAsync(a => a.Id == address.Id, cancellationToken);
+        }
+        else
+        {
+            addressWithLocation = await _context.Addresses
+                .AsNoTracking()
+                .Include(a => a.Area)
+                    .ThenInclude(ar => ar.City)
+                .Where(a => a.UserId == volunteer.UserId)
+                .OrderByDescending(a => a.Id)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
 
         _logger.LogInformation("Volunteer updated with Id {VolunteerId}", volunteer.Id);
 
-        return new VolunteerResponse
+        return VolunteerMapping.ToResponse(volunteer, volunteer.User, volunteer.Organization, addressWithLocation);
+    }
+
+    private void EnsureCanManage(Volunteer volunteer)
+    {
+        if (_currentUser.IsAdmin)
         {
-            Id = volunteer.Id,
-            UserId = volunteer.UserId,
-            Status = volunteer.Status
-        };
+            return;
+        }
+
+        if (volunteer.UserId != _currentUser.UserId)
+        {
+            throw new ForbiddenException("You can only manage your own volunteer profile.");
+        }
     }
 }
